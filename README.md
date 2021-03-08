@@ -2,7 +2,6 @@
 
 ---
 
-## Introduction
 Welcome to the MemeStash NodeJS Back-End. This application can be used in combination with one of the 2 MemeStash clients
 in order to provide them with data.
 
