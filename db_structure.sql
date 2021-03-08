@@ -9,6 +9,9 @@ drop table if exists trades;
 drop table if exists offers;
 set FOREIGN_KEY_CHECKS = 1;
 
+create or replace user node_provider identified by 'N0desslyExpress1ve';
+grant all privileges on memestash to 'node_provider';
+
 create table cards(
     id int auto_increment primary key,
     name tinytext unique,
