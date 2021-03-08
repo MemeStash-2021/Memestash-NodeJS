@@ -7,6 +7,8 @@ drop table if exists collections;
 drop table if exists cards;
 drop table if exists trades;
 drop table if exists offers;
+drop table if exists chats;
+drop table if exists messages;
 set FOREIGN_KEY_CHECKS = 1;
 
 create or replace user node_provider identified by 'N0desslyExpress1ve';
@@ -48,4 +50,19 @@ create table offers(
     participant ENUM('sender', 'receiver'),
     foreign key (trade_id) references trade(id),
     foreign key (card_id) references cards(id)
+);
+
+create table chats(
+    id int auto_increment primary key unique,
+    participant_id_1 int,
+    participant_id_2 int,
+    foreign key (participant_id_1) references users(id),
+    foreign key (participant_id_2) references users(id)
+);
+
+create table messages(
+    chat_id int,
+    message text,
+    timestamp datetime,
+    foreign key (chat_id) references chats(id)
 );
