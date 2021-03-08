@@ -48,7 +48,7 @@ create table offers(
     trade_id int,
     card_id int,
     participant ENUM('sender', 'receiver'),
-    foreign key (trade_id) references trade(id),
+    foreign key (trade_id) references trades(id),
     foreign key (card_id) references cards(id)
 );
 
