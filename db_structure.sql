@@ -6,8 +6,7 @@ drop table if exists users;
 drop table if exists collections;
 drop table if exists cards;
 drop table if exists trades;
-drop table if exists sender_offer;
-drop table if exists reciever_offer;
+drop table if exists offers;
 set FOREIGN_KEY_CHECKS = 1;
 
 create table cards(
@@ -19,21 +18,21 @@ create table cards(
 );
 
 create table users(
-    id int auto_increment primary key,
+    id int auto_increment primary key unique,
     username tinytext unique,
     password text,
     wallet int
 );
 
-create table collection(
+create table collections(
     user_id int,
     card_id int,
     foreign key (user_id) references users(id),
     foreign key (card_id) references cards(id)
 );
 
-create table trade(
-    id int auto_increment primary key,
+create table trades(
+    id int auto_increment primary key unique,
     sender_id int,
     receiver_id int,
     foreign key (sender_id) references users(id),
