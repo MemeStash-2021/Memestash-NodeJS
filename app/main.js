@@ -9,7 +9,7 @@ init()
 
 function init(){
     ops.server.listen(port, ()=> {
-        console.log(`Server is running on ${port}`)
+        console.log("Server is running on", `${port}`.yellow)
     })
     ops.app.use(ops.express.json());
     ops.app.use(ops.express.urlencoded({extended: false}))

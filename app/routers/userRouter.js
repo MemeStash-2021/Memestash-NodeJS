@@ -4,7 +4,7 @@ const router = express.Router()
 
 router.get('', (req,res) => {
     res.json(mock.users)
-    console.log("\x1b[33m%s\x1b[0m\x1b[4m%s\x1b[0m\x1b[32m\x1b[0m", "200 ", "/users", ": OK")
+    console.log("200".yellow, "/users".bold, ": ", "OK".bold.green)
 })
 
 module.exports = router
