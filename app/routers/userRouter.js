@@ -2,9 +2,25 @@ const express = require('express')
 const mock = require('../mock.js') // TODO: Remove this once all callbacks use database callbacks
 const router = express.Router()
 
-router.get('', (req,res) => {
+router.get('', (req, res) => {
     res.json(mock.users)
     console.log("200".yellow, "/users".bold, ": ", "OK".bold.green)
 })
+
+router.get('/:ouid', ((req, res) => {
+    const ouid = parseInt(req.params.ouid)
+    const query = mock.users.filter(user => user.userId === ouid)
+    switch (query.length) {
+        case 1:
+            console.log("200".green, `/users/${ouid}`.bold, ": ", "OK".bold.green)
+            return res.json(query)
+        case 0:
+            console.log("404".red, `/users/${ouid}`.bold, ": ", "User was not found");
+            return res.status(404).send(`The user with ID ${ouid} does not exist.`)
+        default:
+            console.log("500".bold.red, `/users/${ouid}`.bold, ": ", "Internal Server Error".bold.bgRed.white, "Server return non-compliant data: Data Integrity may be at risk!".bgRed.white)
+            return res.status(500).send("Internal Server Error")
+    }
+}))
 
 module.exports = router
