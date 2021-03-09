@@ -16,7 +16,7 @@ grant all privileges on memestash to 'node_provider';
 
 create table cards(
     id int auto_increment primary key,
-    name tinytext unique,
+    name varchar(60) unique,
     picture text,
     price int,
     description text
@@ -24,7 +24,7 @@ create table cards(
 
 create table users(
     id int auto_increment primary key unique,
-    username tinytext unique,
+    username varchar(60) unique,
     password text,
     wallet int
 );
@@ -62,7 +62,7 @@ create table chats(
 
 create table messages(
     chat_id int,
-    message text,
+    message varchar(255),
     timestamp datetime,
     foreign key (chat_id) references chats(id)
 );
