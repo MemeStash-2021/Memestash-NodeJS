@@ -2,7 +2,7 @@ const express = require('express')
 const mysql = require('mysql')
 const http = require('http')
 
-const exInit = express();
+const app = express();
 
 module.exports = {
     DBcon : mysql.createConnection({
@@ -11,6 +11,7 @@ module.exports = {
         password :'N0desslyExpress1ve',
         database :'memestash'
     }),
-    app : exInit,
-    server : http.createServer(exInit)
+    app : app,
+    server : http.createServer(app),
+    express : express
 }

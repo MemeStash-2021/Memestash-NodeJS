@@ -5,9 +5,19 @@ const port = 8888
 //Express Routers
 const users = require('./routers/userRouter')
 
-ops.server.listen(port, ()=> {
-    console.log(`Server is running on ${port}`)
-})
+init()
 
-ops.app.use('/users', users);
+function init(){
+    ops.server.listen(port, ()=> {
+        console.log(`Server is running on ${port}`)
+    })
+    ops.app.use(ops.express.json());
+    ops.app.use(ops.express.urlencoded({extended: false}))
+    initRouters()
+
+    function initRouters(){
+        ops.app.use('/users', users);
+    }
+}
+
 
