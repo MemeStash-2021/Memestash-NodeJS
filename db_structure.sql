@@ -17,7 +17,7 @@ grant all privileges on memestash to 'node_provider';
 create table cards(
     id int auto_increment primary key,
     name varchar(60) unique,
-    picture varchar(255),
+    picture text,
     price int,
     description text
 );
