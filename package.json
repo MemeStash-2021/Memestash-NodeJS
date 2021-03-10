@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run-server": "node main.js"
+    "run-server": "node app/main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "colors": "^1.4.0",
     "express": "^4.17.1",
     "http": "0.0.1-security",
     "mysql": "^2.18.1"
