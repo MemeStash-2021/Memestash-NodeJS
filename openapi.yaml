@@ -1,0 +1,614 @@
+openapi: 3.0.0
+info:
+  title: 'Memestash Laravel Back-End'
+  version: 0.1.0
+  description: 'Back-end application based on the Laravel Framework, to be used with Memestash web and/or native app'
+  contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'https://git.ti.howest.be/TI/2020-2021/s4/web-and-mobile-technology/students/bo-robbrecht/memestash/laravel' }
+servers:
+  - { url: 'http://localhost', description: 'Local url for testing' }
+tags:
+  - name: Users
+    description: All endpoints interacting mainly with users
+  - name: Cards
+    description: All endpoints interacting mainly with Cards
+  - name: Chats
+    description: All endpoints interacting mainly with Chats
+  - name: Trades
+    description: All endpoints interacting mainly with Trades
+  - name: Wallet
+    description: All endpoints interacting mainly with Wallets
+paths:
+  /users:
+    get:
+      summary: Get all users.
+      description: Get all users and basic, non-sensitive information.
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShortUser"
+        '500':
+          $ref: "#/components/responses/500"
+    put:
+      summary: Adds a new user
+      description: Adds a new user. A body with the needed infomation **MUST** be provided
+      tags:
+        - Users
+      requestBody:
+        description: Describes the data needed to insert a new users
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewUser"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortUser"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}:
+    get:
+      summary: Gets specific info
+      description: Gets the specific info of a user that is needed in order to make a home page.
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+    patch:
+      summary: Edit a user
+      description: Edits the data passed along in the body. The (original) password needs to be passed to complete the transaction
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+      tags:
+        - Users
+      requestBody:
+        description: Includes the data thta needs to be edited & the (original) password.
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - type: object
+                  required:
+                    - password
+                  properties:
+                    username:
+                      type: string
+                      example: Mori
+                    newPassword:
+                      type: string
+                    password:
+                      type: string
+                - type: object
+                  required:
+                    - password
+                  properties:
+                    username:
+                      type: string
+                      example: Mori
+                    password:
+                      type: string
+                - type: object
+                  required:
+                    - password
+                  properties:
+                    newPassword:
+                      type: string
+                    password:
+                      type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortUser"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /cards:
+    get:
+      summary: Gets all cards in the DB
+      description: Gets all the cards in a database
+      tags:
+        - Cards
+      parameters:
+        - $ref: "#/components/parameters/NameQuery"
+        - $ref: "#/components/parameters/id"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Card"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/cards:
+    get:
+      summary: Gets a user's collection.
+      description: Gets the cards a user owns. Duplicates are possible!
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+      tags:
+        - Cards
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/cards/{cid}:
+    put:
+      summary: Adds a card to the user's collection
+      description: Adds a card to a user's collection. The cost is automatically deducted
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/cid"
+      tags:
+        - Cards
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/chats:
+    get:
+      summary: Gets the user's conversations
+      description: Gets all the conversations of a user. This is also include the latest message in that conversation
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+      tags:
+        - Chats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    correspondent:
+                      $ref: "#/components/schemas/ShortUser"
+                    lastestMessage:
+                      $ref: "#/components/schemas/Message"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/chats/{tuid}:
+    get:
+      summary: Gets the conversation's content
+      description: "Returns the conversation's content between the user with the given ouid and the user with the given tuid."
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/tuid"
+      tags:
+        - Chats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+    patch:
+      summary: Send a message
+      description: Sends a message to the user associated with TUID. The message queue needs to exists, otherwise, a 308 redirection message will be returned.
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/tuid"
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/count"
+      requestBody:
+        description: Contains the message that needs to be passed to
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: This a example message
+      tags:
+        - Chats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        '404':
+          $ref: "#/components/responses/404"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+        '308':
+          $ref: "#/components/responses/308exist"
+    put:
+      summary: Create a conversation
+      description: Creates a conversation if it doesn't exist yet. If a message queue already exists, a 308 redirection code will returned
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/tuid"
+      tags:
+        - Chats
+      requestBody:
+        description: Contains the message that needs to be passed to
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: This a example message
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        '404':
+          $ref: "#/components/responses/404"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+        '308':
+          $ref: "#/components/responses/308new"
+  /users/{ouid}/trades:
+    get:
+      summary: Gets trade events
+      description: Gets the trade events where the user with the ouid is associated with. These can be filtered by querying.
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/count"
+        - $ref: "#/components/parameters/id"
+      tags:
+        - Trades
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/trades/{tuid}:
+    put:
+      summary: Adds a trade
+      description: Adds a trade to the system. A initial offer needs to be provided when created a trade request, that detailed which cards will be traded between users.
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/tuid"
+      tags:
+        - Trades
+      requestBody:
+        description: Details a initial trade offer that is sended to the system.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  offer:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Card"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        '404':
+          $ref: "#/components/responses/404"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/trades/{tid}:
+    patch:
+      summary: Accept or denies a trade.
+      description: Accepts or denies a trade. If accepted, the actions are automatically performed.
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+        - $ref: "#/components/parameters/tid"
+      tags:
+        - Trades
+      requestBody:
+        description: Defines if the trade is accepted
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accepted:
+                  type: boolean
+                  example: true
+      responses:
+        '201':
+          description: Created
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  /users/{ouid}/wallet:
+    put:
+      summary: Adds coins
+      description: Add coins to a user's wallet
+      parameters:
+        - $ref: "#/components/parameters/ouid"
+      requestBody:
+        description: Defines the amount of coins added.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  example: 500
+      tags:
+        - Wallet
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          $ref: "#/components/responses/404"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+components:
+  parameters:
+    NameQuery:
+      name: name
+      in: query
+      schema:
+        type: string
+      description: Filters by name
+    ouid:
+      name: ouid
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 2
+      description: The id associated with a user
+    cid:
+      name: cid
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 23
+      description: The id associated with a card
+    tuid:
+      name: tuid
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 2
+      description: The id associated with a user
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+      description: Drops a certain count of **first** items in the array.
+    count:
+      name: count
+      in: query
+      schema:
+        type: integer
+      description: Defines the maximum amount of objects in the array that may be passed.
+    id:
+      name: id
+      in: query
+      schema:
+        type: integer
+      description: Defines the id that the object should have.
+    tid:
+      name: tid
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Defines the trade ID
+  schemas:
+    ShortUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Ruiner
+    NewUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "Ruiner"
+        password:
+          type: string
+          format: password
+          example: SomePassword
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: "Ruiner"
+        wallet:
+          type: integer
+          example: 800000
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Card 1"
+        description:
+          type: string
+          example: "This a card with a description"
+        cost:
+          type: integer
+          example: 800
+    Collection:
+      type: object
+      properties:
+        userid:
+          type: integer
+          example: 3
+        count:
+          type: integer
+          example: 56
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Card"
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+          example: This is an example message
+        date:
+          type: string
+          format: date-time
+        sender:
+          type: string
+          example: Mori
+        senderId:
+          type: integer
+          example: 4
+    Conversation:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/ShortUser"
+        correspondent:
+          $ref: "#/components/schemas/ShortUser"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+    Trade:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        type:
+          type: string
+          enum: ['incoming', 'outgoing']
+          example: incoming
+        trade:
+          type: array
+          items:
+            type: object
+            properties:
+              user:
+                $ref: "#/components/schemas/ShortUser"
+              offer:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Card"
+  responses:
+    404:
+      description: This object with the given ID could not be found
+    500:
+      description: Internal Server error
+    400:
+      description: The request body / query is not correct.
+    401:
+      description: Authorization failed.
+    308exist:
+      description: No message queue exists. Use PUT /users/{ouid}/chats/{tuid} instead to create a message queue.
+    308new:
+      description: A message queue with this user already exists. Use PATCH /users/{ouid}/chats/{tuid} instead to add to the message queue.
