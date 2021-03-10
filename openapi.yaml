@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: 'Memestash Laravel Back-End'
+  title: 'Memestash Node Back-End'
   version: 0.1.0
-  description: 'Back-end application based on the Laravel Framework, to be used with Memestash web and/or native app'
-  contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'https://git.ti.howest.be/TI/2020-2021/s4/web-and-mobile-technology/students/bo-robbrecht/memestash/laravel' }
+  description: 'Back-end application running on a NodeJS server, to be used with Memestash web and/or native app'
+  contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'https://git.ti.howest.be/TI/2020-2021/s4/web-and-mobile-technology/students/bo-robbrecht/memestash/nodejs' }
 servers:
-  - { url: 'http://localhost', description: 'Local url for testing' }
+  - { url: 'http://localhost:8888', description: 'Local url for testing' }
 tags:
   - name: Users
     description: All endpoints interacting mainly with users
