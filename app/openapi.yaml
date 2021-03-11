@@ -360,7 +360,12 @@ paths:
                   offer:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Card"
+                      type: integer
+                    example:
+                      - 2
+                      - 2
+                      - 4
+                      - 5
       responses:
         '200':
           description: OK
