@@ -47,9 +47,10 @@ create table trades(
 create table offers(
     trade_id int not null ,
     card_id int not null ,
-    participant ENUM('sender', 'receiver'),
+    participant_id int,
     foreign key (trade_id) references trades(id),
-    foreign key (card_id) references cards(id)
+    foreign key (card_id) references cards(id),
+    foreign key (participant_id) references users(id)
 );
 
 create table chats(
