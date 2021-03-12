@@ -1,6 +1,7 @@
 //Node Constants
+const db = require('./config/database.js')
 const ws = require('./config/ws.js')
-const colors = require('colors')
+require('colors')
 
 //Express Routers
 const users = require('./routers/userRouter')
@@ -13,6 +14,7 @@ function init(){
     })
     ws.app.use(ws.express.json());
     ws.app.use(ws.express.urlencoded({extended: false}))
+    db.config();
     initRouters()
 
     function initRouters(){

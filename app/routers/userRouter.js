@@ -1,4 +1,5 @@
 const express = require('express')
+const db = require('../config/database.js')
 const mock = require('../mock.js') // TODO: Remove this once all callbacks use database callbacks
 const router = express.Router()
 
