@@ -29,14 +29,15 @@ That's it! The database should be configured and all the needed users and their 
 
 ## Features
 ### API Spec
+#### URL & Parameters & Body Validation
+URL, Parameter & Body validation is done with [Express OpenAPI Validator](https://www.npmjs.com/package/express-openapi-validator), which uses the OpenAPI spec sheet to check requests.
 #### Users
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
-|GET|`/users`|Retrieves a list of all users and info about them. Can be filtered with query parameters.| N/A |
-|GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|N/A|
-|PUT|`/users`|This endpoint will add a new user account to the application.|N/A|
-|DELETE|`/users/{ouid}`|This endpoint is used to delete an user and his collection from the database.|N/A|
-|PATCH|`/users/{ouid}`|This endpoint is used in order to change account information of the user (Such as the account’s email).|N/A|
+|GET|`/users`|Retrieves a list of all users and info about them. Can be filtered with query parameters.| Implemented |
+|GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|Mock|
+|PUT|`/users`|This endpoint will add a new user account to the application.|Mock|
+|PATCH|`/users/{ouid}`|This endpoint is used in order to change account information of the user (Such as the account’s email).|Mock|
 |POST|`/users/login`|This endpoint is responsible for authenticating a user.|N/A|
 #### Cards
 |HTTP Verb|Endpoint|Description|Stage?|
