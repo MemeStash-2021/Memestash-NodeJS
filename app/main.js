@@ -1,6 +1,6 @@
 //Node Constants
-const ops = require('./init')
-const port = 8888
+const ws = require('./config/ws.js')
+const colors = require('colors')
 
 //Express Routers
 const users = require('./routers/userRouter')
@@ -8,15 +8,15 @@ const users = require('./routers/userRouter')
 init()
 
 function init(){
-    ops.server.listen(port, ()=> {
-        console.log("Server is running on", `${port}`.yellow)
+    ws.server.listen(ws.port, ()=> {
+        console.log("Server is running on", `${ws.port}`.yellow)
     })
-    ops.app.use(ops.express.json());
-    ops.app.use(ops.express.urlencoded({extended: false}))
+    ws.app.use(ws.express.json());
+    ws.app.use(ws.express.urlencoded({extended: false}))
     initRouters()
 
     function initRouters(){
-        ops.app.use('/users', users);
+        ws.app.use('/users', users);
     }
 }
 
