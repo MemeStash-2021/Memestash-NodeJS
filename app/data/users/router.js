@@ -8,28 +8,26 @@ const stmts = require('./statements.js')
 const router = express.Router()
 
 // Data Constants
-const mock = require('../../mock.js') // TODO: Remove this once all callbacks use database callbacks
-const connection = mysql.createConnection(db.config)
+const mock = require('../../mock.js') // TODO: Remove this once all callbacks use database callback.
 
 router.route('')
     .get((req, res) => {
         const name = req.query.name
+        const connection = mysql.createConnection(db.config)
         const query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered
         connection.connect((conErr) => {
             if (conErr) throw conErr
-            connection.query(query, (name === undefined) ? undefined : name, (err, rows) => {
+            connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
                 if(err) throw err
                 res.json(rows.map(user => {
                     delete user.password
                     delete user.wallet
                     return user
                 }))
-                connection.end()
                 console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
+                connection.end()
             })
         })
-
-
     })
     .put(((req, res) => {
         if ("username" in req.body && "password" in req.body) {
