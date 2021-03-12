@@ -18,7 +18,12 @@ router.route('')
         connection.connect((conErr) => {
             if (conErr) throw conErr
             connection.query(query, (name === undefined) ? undefined : name, (err, rows) => {
-                console.log(rows)
+                if(err) throw err
+                res.json(rows.map(user => {
+                    delete user.password
+                    delete user.wallet
+                    return user
+                }))
                 connection.end()
                 console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
             })
