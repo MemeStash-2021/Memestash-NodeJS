@@ -14,13 +14,17 @@ const connection = mysql.createConnection(db.config)
 router.route('')
     .get((req, res) => {
         const name = req.query.name
-        const query = (name === '') ? stmts.getUsers : stmts.getUsersFiltered
-        connection.connect((err) => {
-            if (err) throw err
-            console.log("Connected!")
+        const query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered
+        connection.connect((conErr) => {
+            if (conErr) throw conErr
+            connection.query(query, (name === undefined) ? undefined : name, (err, rows) => {
+                console.log(rows)
+                connection.end()
+                console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
+            })
         })
 
-        console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
+
     })
     .put(((req, res) => {
         if ("username" in req.body && "password" in req.body) {

@@ -12,7 +12,7 @@ drop table if exists messages;
 set FOREIGN_KEY_CHECKS = 1;
 
 create or replace user node_provider identified by 'N0desslyExpress1ve';
-grant all privileges on memestash to 'node_provider';
+grant all privileges on memestash.* to 'node_provider';
 
 create table cards
 (
