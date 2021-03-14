@@ -1,6 +1,10 @@
+//TODO: Export Error Handling to seperate file & function
+
 // Node constants
 const express = require('express')
 const mysql = require("mysql");
+const bcrypt = require("bcrypt")
+const saltRounds = 10
 
 // App Constants
 const db = require('../../config/database.js')
@@ -30,9 +34,25 @@ router.route('')
         })
     })
     .put(((req, res) => {
+        const connection = mysql.createConnection(db.config)
         const name = req.body.username
-        const password = req.body.password
-        console.log(name, password)
+        const query = stmts.addUser
+        connection.connect((conErr) => {
+            if (conErr) throw conErr
+            bcrypt.hash(req.body.password, saltRounds).then(hash => {
+                connection.query(query, [name, hash], (err, rows) => {
+                    if(err) throw err
+                    res.status(201).json({
+                        id: rows.insertedID,
+                        name: name
+                    })
+                    console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green)
+                    connection.end()
+                })
+            }).catch(err => {
+                console.log("500".bold.red, "PUT /users".bold.white.bgRed, `The password was not able to be encrypted: ${err}`.bold.white.bg)
+            })
+        })
     }))
 
 router.route('/:ouid')
