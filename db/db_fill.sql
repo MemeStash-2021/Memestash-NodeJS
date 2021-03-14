@@ -42,17 +42,17 @@ values ('Hank Hill Listens to X', null, 100,
 
 /*TODO: When hashing has been implemented, replace all passwords with their hashed counterparts*/
 insert into users(username, password, wallet)
-VALUES ('Mori', 'y0urM0ri', 1200),
-       ('Ruiner', 'g00dD0g', 800),
-       ('MF DOOM', '0neB33r', 200),
-       ('BT', 'B3tY0uD1dnt3xp3ctTh1s', 2500),
-       ('Daemon', 'Test123', 300),
-       ('Dockery', 'WhA1ing', 900),
-       ('Same', 'Similar', 200),
-       ('Same2', 'Similarity', 700),
-       ('HomeStead', 'Fr3meW0rkFTW', 500),
-       ('R3trofy', 'M0reInteresting', 600),
-       ('Vagrant', 'Fa1ledF0rM3', 300);
+VALUES ('Mori', '$2b$10$w4iQGgiS139hlvnncieHNOhti0Hkpxv33T60oEKnSqYb/4lA.CKuS', 1200),
+       ('Ruiner', '$2b$10$zgfeR6cGH6/DcNRACNZtquCyDOBBp8nNpwulvtTGqzRdwsEm4joQa', 800),
+       ('MF DOOM', '$2b$10$W2b1OXP8t/yUk1uff5DW8eMit3CBiV4xUCcTMKhUMiFE8es/j5bRK', 200),
+       ('BT', '$2b$10$2uaqgWpJ2p8hFSTb8saJoeeWxep8b44uHIjv9pB3gCVEMDzEiDtVC', 2500),
+       ('Daemon', '$2b$10$LRXZIJo4v/VF0EWipWTqZ.cDfJ6N2RXkiZiwBzCLzCx06qcWN3maO', 300),
+       ('Dockery', '$2b$10$gFYTSRpNWMxrwiHclvMQoeslI3USENgVpivFKFmmxJRVk4aT2oyR6', 900),
+       ('Same', '$2b$10$9ZNy477wIlNiLRzgZN4iteK.REoAAH3POmYqJ/4O9TOIWd1d1442G', 200),
+       ('Same2', '$2b$10$CcXKeOtzNt4jQnd54YWruOPdonnx4X49nVGg5haQf1p0b2fSYvQWa', 700),
+       ('HomeStead', '$2b$10$YyE4iPYCKk0imsNS6rKiQuj6siohgzmwMFV6.z7qeg/rNbeTZ1tJy', 500),
+       ('R3trofy', '$2b$10$uLRexRGMmmfox8nZpy8Xz.MVx/j6FDt/T.SVd0MhMF.hby8GA5eo.', 600),
+       ('Vagrant', '$2b$10$NPKNmcl7FlcOxv435UmpTuK.ETXjS7Ib5HTfcKLgCX/GJPHoj/XqC', 300);
 
 insert into collections(user_id, card_id)
 VALUES
