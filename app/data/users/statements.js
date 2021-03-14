@@ -1,4 +1,5 @@
 module.exports = {
     getUsers: 'SELECT * FROM memestash.users;',
-    getUsersFiltered: 'SELECT * FROM memestash.users where username LIKE ?;'
+    getUsersFiltered: 'SELECT * FROM memestash.users where username LIKE ?;',
+    addUser: 'INSERT INTO memestash.users(username, password, wallet) Values (?,?,wallet)'
 }
