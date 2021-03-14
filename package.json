@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run-server": "node app/main.js"
+    "server": "node ./app/main.js",
+    "encrypt": "node ./app/encrypt.js -i"
   },
   "keywords": [],
   "author": "",
