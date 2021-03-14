@@ -30,13 +30,9 @@ router.route('')
         })
     })
     .put(((req, res) => {
-        if ("username" in req.body && "password" in req.body) {
-            console.log("201".yellow, "PUT /users".bold, ": ", "OK".bold.green)
-            return res.json({id: 1, name: req.body.username})
-        } else {
-            console.log("400".red, `PUT /users`.bold, ": ", "Malformed request");
-            return res.status(400).send("The request body is incorrect");
-        }
+        const name = req.body.username
+        const password = req.body.password
+        console.log(name, password)
     }))
 
 router.route('/:ouid')
