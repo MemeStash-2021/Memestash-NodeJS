@@ -46,7 +46,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 |---|---|---|---|
 |GET|`/users`|Retrieves a list of all users and info about them. Can be filtered with query parameters.| Implemented |
 |GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|Mock|
-|PUT|`/users`|This endpoint will add a new user account to the application.|Mock|
+|PUT|`/users`|This endpoint will add a new user account to the application.|Implemented <br> **Note:** Error feedback is wonky on this one. This is already planned to be reworked.|
 |PATCH|`/users/{ouid}`|This endpoint is used in order to change account information of the user (Such as the account’s email).|Mock|
 |POST|`/users/login`|This endpoint is responsible for authenticating a user.|N/A|
 #### Cards
