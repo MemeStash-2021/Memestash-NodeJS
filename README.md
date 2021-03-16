@@ -14,7 +14,7 @@ This repo comes included with a `docker-compose.yaml` file. With this, you can e
     - 3306 *(This is the port used by MariaDB)*
     - 8080 *(This is a port reserved for Admirer, a web interface for MariaDB)*
     
-### Setup
+### Installation process
 1. Clone this project using `git clone`
 2. Open a terminal in the cloned directory
 3. Run the following command: `docker-compose up -d`. This will run the containers in **detached mode**, so that you're able to keep using your CLI.
@@ -25,9 +25,19 @@ This repo comes included with a `docker-compose.yaml` file. With this, you can e
     - **Password**: Friday13th!
 5.  Run the `db-structure.sql` and `db-filler.sql` **(W.I.P.)**.
 
-That's it! The database should be configured and all the needed users and their permissions should be made. You can run the server by typing `node run-server` in a CLI *(**Note:** Make sure you're in the cloned directory)*
+That's it! The database should be configured and all the needed users and their permissions should be made. You can run the server by typing `npm run server` in a CLI *(**Note:** Make sure you're in the cloned directory)*
 
 ## Features
+### Encryption
+All password are encrypted using BCrypt encryption package. if you wish to manually encrypt a password, you can do this by using the following command:
+```powershell
+    npm run encrypt <string>
+```
+### Console
+The console will display the following things during it's lifetime:
+- Configuration information *(Like port configuration, etc...)*
+- Sucessfull requests
+- Unsuccessfull requests
 ### API Spec
 #### URL & Parameters & Body Validation
 URL, Parameter & Body validation is done with [Express OpenAPI Validator](https://www.npmjs.com/package/express-openapi-validator), which uses the OpenAPI spec sheet to check requests.
@@ -36,7 +46,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 |---|---|---|---|
 |GET|`/users`|Retrieves a list of all users and info about them. Can be filtered with query parameters.| Implemented |
 |GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|Mock|
-|PUT|`/users`|This endpoint will add a new user account to the application.|Mock|
+|PUT|`/users`|This endpoint will add a new user account to the application.|Implemented <br> **Note:** Error feedback is wonky on this one. This is already planned to be reworked.|
 |PATCH|`/users/{ouid}`|This endpoint is used in order to change account information of the user (Such as the account’s email).|Mock|
 |POST|`/users/login`|This endpoint is responsible for authenticating a user.|N/A|
 #### Cards
@@ -62,3 +72,10 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
 |PUT|`/users/{ouid}/wallet`|Adds a new amount of coins to the wallet.|N/A|
+
+## FAQ
+**Q:** The node scripts don't run! <br>
+**A:** You might have to run `npm run` in order to discover the scripts. If that doesn't solve the problem, double check if you're in the root directory. <br>
+Alternatively, you can invoke the file if needed:
+- `npm run server` => `node ./app/main.js`
+- `npm run encrypt <string>` => `node ./app/encrypt.js -i <string>`
