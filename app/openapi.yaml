@@ -58,6 +58,8 @@ paths:
                 $ref: "#/components/schemas/ShortUser"
         '400':
           $ref: "#/components/responses/400"
+        409:
+          $ref: "#/components/responses/409"
         '500':
           $ref: "#/components/responses/500"
   /users/{ouid}:
@@ -624,3 +626,5 @@ components:
       description: No message queue exists. Use PUT /users/{ouid}/chats/{tuid} instead to create a message queue.
     308new:
       description: A message queue with this user already exists. Use PATCH /users/{ouid}/chats/{tuid} instead to add to the message queue.
+    409:
+      description: The username is already taken. Please use another username.

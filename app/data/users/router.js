@@ -1,4 +1,4 @@
-//TODO: Export Error Handling to seperate file & function
+//TODO: Export Error Handling to separate file & function. (Maybe look into Express's error handler?)
 
 // Node constants
 const express = require('express')
@@ -22,7 +22,7 @@ router.route('')
         connection.connect((conErr) => {
             if (conErr) throw conErr
             connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
-                if(err) throw err
+                if (err) throw err
                 res.json(rows.map(user => {
                     delete user.password
                     delete user.wallet
@@ -41,16 +41,26 @@ router.route('')
             if (conErr) throw conErr
             bcrypt.hash(req.body.password, saltRounds).then(hash => {
                 connection.query(query, [name, hash], (err, rows) => {
-                    if(err) throw err
-                    res.status(201).json({
-                        id: rows.insertedID,
-                        name: name
-                    })
-                    console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green)
-                    connection.end()
+                    if (err) {
+                        if (err.errno === 1062) {
+                            console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken")
+                            res.status(409).send("This user already exists")
+                        } else{
+                            throw err
+                        }
+                        connection.end()
+                    }else {
+                        res.status(201).json({
+                            id: rows.insertId,
+                            name: name
+                        })
+                        console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green)
+                        connection.end()
+                    }
                 })
             }).catch(err => {
                 console.log("500".bold.red, "PUT /users".bold.white.bgRed, `The password was not able to be encrypted: ${err}`.bold.white.bg)
+                res.status(500).send("Internal server error")
             })
         })
     }))
