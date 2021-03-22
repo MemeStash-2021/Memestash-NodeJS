@@ -27,6 +27,7 @@ create table users
 (
     id       int auto_increment primary key unique,
     username varchar(60) unique not null,
+    email       varchar (255) unique not null,
     password text               not null,
     wallet   int                not null
 );
