@@ -25,6 +25,7 @@ router.route('')
                 if (err) throw err
                 res.json(rows.map(user => {
                     delete user.password
+                    delete user.email
                     delete user.wallet
                     return user
                 }))
@@ -36,11 +37,13 @@ router.route('')
     .put(((req, res) => {
         const connection = mysql.createConnection(db.config)
         const name = req.body.username
+        const email = req.body.email
         const query = stmts.addUser
         connection.connect((conErr) => {
             if (conErr) throw conErr
             bcrypt.hash(req.body.password, saltRounds).then(hash => {
-                connection.query(query, [name, hash], (err, rows) => {
+                connection.query(query, [name, email, hash], (err, rows) => {
+                    //TODO: Fix the error handling and let Validator do most of the work!
                     if (err) {
                         if (err.errno === 1062) {
                             console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken")
@@ -81,6 +84,7 @@ router.route('/:ouid')
                 return res.status(500).send("Internal Server Error")
         }
     })
+
     //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
     .patch((req, res) => {
         const ouid = parseInt(req.params.ouid)
