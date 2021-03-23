@@ -18,5 +18,8 @@
     "express-openapi-validator": "^4.12.4",
     "http": "0.0.1-security",
     "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.22.0"
   }
 }

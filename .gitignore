@@ -233,4 +233,8 @@ modules.xml
 !.vscode/extensions.json
 *.code-workspace
 .vscode
+
+### ESLint ###
+.eslintrc.js
+
 # End of https://www.toptal.com/developers/gitignore/api/vscode

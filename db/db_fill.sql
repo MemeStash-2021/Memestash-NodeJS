@@ -1,7 +1,7 @@
 use memestash;
 
 insert into cards(name, picture, price, description)
-values ('Hank Hill Listens to X', null, 100,
+values ('Hank Hill Listens to X', 'https://via.placeholder.com/300', 100,
         'Hank Hill Listens to X is a series of YouTube videos showing Hank Hill from the animated TV series King of the Hill listening to music on headphones, reacting with a horrified and baffled expression. The original clip comes from the first episode of the series, broadcast January 12th, 1997.'),
        ('Megalovania', 'https://via.placeholder.com/300', 300,
         '"Megalovania" is a song composed by musician and video game developer Toby "Radiation" Fox. The song, featured on Fox\'s Earthbound Halloween Hack and the webcomic series Homestuck, experienced a rise of popularity after the release of the video game Undertale in September 2015, inspiring remixes and mash-ups.In 2008, Toby Fox released the EarthBound Halloween Hack,[1] a ROM hack of the SNES video game Earthbound. During the final boss fight against Dr. Andonuts, a track produced for the game titled "Megalovania" plays. On December 5th, 2009, YouTuber[6] Cameron uploaded the song, garnering over 2.6 million views in 12 years.'),
