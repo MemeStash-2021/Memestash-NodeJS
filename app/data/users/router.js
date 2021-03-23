@@ -16,9 +16,8 @@ const mock = require('../../mock.js') // TODO: Remove this once all callbacks us
 
 router.route('')
     .get((req, res) => {
-        const name = req.query.name
-        const connection = mysql.createConnection(db.config)
-        const query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered
+        const name = req.query.name, connection = mysql.createConnection(db.config),
+            query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered;
         connection.connect((conErr) => {
             if (conErr) throw conErr
             connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
@@ -35,10 +34,8 @@ router.route('')
         })
     })
     .put(((req, res) => {
-        const connection = mysql.createConnection(db.config)
-        const name = req.body.username
-        const email = req.body.email
-        const query = stmts.addUser
+        const connection = mysql.createConnection(db.config), name = req.body.username, email = req.body.email,
+            query = stmts.addUser;
         connection.connect((conErr) => {
             if (conErr) throw conErr
             bcrypt.hash(req.body.password, saltRounds).then(hash => {
@@ -70,14 +67,27 @@ router.route('')
 
 router.route('/:ouid')
     .get((req, res) => {
-        const ouid = parseInt(req.params.ouid)
-        const query = stmts.getUser
-        const connection = mysql.createConnection(db.config)
+        const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
         connection.connect((conErr) => {
             if (conErr) throw conErr
             connection.query(query, [ouid], (err, rows) => {
                 if(err) throw err
-                console.log(rows)
+                res.json({
+                    id: rows[0].user_id,
+                    name: rows[0].username,
+                    wallet: rows[0].wallet,
+                    cards: rows.map(result => {
+                        return {
+                            id: result.id,
+                            name: result.name,
+                            image: result.picture,
+                            description: result.description,
+                            cost: result.price
+                        }
+                    })
+                })
+                console.log("200".yellow, `GET /users/${ouid}`.bold, ": ", "OK".bold.green)
+                connection.end()
             })
         })
     })
