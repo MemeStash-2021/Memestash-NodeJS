@@ -114,6 +114,7 @@ router.route('/:ouid')
         }
     })
 
+//TODO: No checks implemented. Do this when creating the DB Callback
 router.route("/:ouid/cards")
     .get( (req, res) =>{
         const ouid = parseInt(req.params.ouid);
@@ -123,6 +124,17 @@ router.route("/:ouid/cards")
             cards: mock.cards()
         })
         console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
+    })
+
+//TODO: No checks implemented. Do this when creating the DB Callback
+router.route("/:ouid/cards/:cid")
+    .put((req, res) => {
+        const ouid = parseInt(req.params.ouid), cid = parseInt(req.params.cid);
+        res.json({
+            userid: ouid,
+            count: mock.cards().length,
+            cards: mock.cards()
+        })
     })
 
 module.exports = router
