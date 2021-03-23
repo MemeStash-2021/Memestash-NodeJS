@@ -16,9 +16,8 @@ const mock = require('../../mock.js') // TODO: Remove this once all callbacks us
 
 router.route('')
     .get((req, res) => {
-        const name = req.query.name
-        const connection = mysql.createConnection(db.config)
-        const query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered
+        const name = req.query.name, connection = mysql.createConnection(db.config),
+            query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered;
         connection.connect((conErr) => {
             if (conErr) throw conErr
             connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
@@ -35,10 +34,8 @@ router.route('')
         })
     })
     .put(((req, res) => {
-        const connection = mysql.createConnection(db.config)
-        const name = req.body.username
-        const email = req.body.email
-        const query = stmts.addUser
+        const connection = mysql.createConnection(db.config), name = req.body.username, email = req.body.email,
+            query = stmts.addUser;
         connection.connect((conErr) => {
             if (conErr) throw conErr
             bcrypt.hash(req.body.password, saltRounds).then(hash => {
@@ -70,19 +67,30 @@ router.route('')
 
 router.route('/:ouid')
     .get((req, res) => {
-        const ouid = parseInt(req.params.ouid)
-        const query = mock.users.filter(user => user.userId === ouid)
-        switch (query.length) {
-            case 1:
-                console.log("200".green, `GET /users/${ouid}`.bold, ": ", "OK".bold.green)
-                return res.json(query)
-            case 0:
-                console.log("404".red, `GET /users/${ouid}`.bold, ": ", "User was not found");
-                return res.status(404).send(`The user with ID ${ouid} does not exist.`);
-            default:
-                console.log("500".bold.red, `GET /users/${ouid}`.bold, ": ", "Internal Server Error".bold.bgRed.white, "Server return non-compliant data: Data Integrity may be at risk!".bgRed.white)
-                return res.status(500).send("Internal Server Error")
-        }
+        const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
+        connection.connect((conErr) => {
+            if (conErr) throw conErr
+            connection.query(query, [ouid], (err, rows) => {
+                if(err) throw err
+                if(rows.length === 0) return res.status(404).json({message: "Unable to find user"});
+                res.json({
+                    id: rows[0].user_id,
+                    name: rows[0].username,
+                    wallet: rows[0].wallet,
+                    cards: rows.map(result => {
+                        return {
+                            id: result.id,
+                            name: result.name,
+                            image: result.picture,
+                            description: result.description,
+                            cost: result.price
+                        }
+                    })
+                })
+                console.log("200".yellow, `GET /users/${ouid}`.bold, ": ", "OK".bold.green)
+                connection.end()
+            })
+        })
     })
 
     //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
