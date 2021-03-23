@@ -21,6 +21,21 @@ const users = [
     }
 ]
 
+const cards = function (){
+    let res = []
+    for(let i = 0; i<10; i++){
+        res.push({
+            id: i,
+            name: `card ${i}`,
+            image: "https://somelinkhere.com/what.png",
+            description: "A interesting description",
+            cost: 800
+        })
+    }
+    return res
+}
+
 module.exports = {
-    users : users
+    users : users,
+    cards : cards
 }

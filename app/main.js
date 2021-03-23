@@ -5,6 +5,7 @@ require('colors')
 
 //Express Routers
 const users = require('./data/users/router')
+const cards = require('./data/cards/router')
 
 init()
 
@@ -37,6 +38,7 @@ function init() {
 
 function initRouters() {
     ws.app.use('/users', users);
+    ws.app.use('/cards', cards);
 }
 
 
