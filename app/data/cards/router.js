@@ -17,7 +17,7 @@ router.get("", (req, res) => {
 		args = [id];
 	} else if(name !== undefined){
 		query = stmts.getCardsByName;
-		args = [name];
+		args = [`%${name}%`];
 	}
 	const connection = mysql.createConnection(db.config);
 	connection.connect((conErr) => {
