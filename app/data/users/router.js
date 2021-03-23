@@ -72,6 +72,7 @@ router.route('/:ouid')
             if (conErr) throw conErr
             connection.query(query, [ouid], (err, rows) => {
                 if(err) throw err
+                if(rows.length === 0) return res.status(404).json({message: "Unable to find user"});
                 res.json({
                     id: rows[0].user_id,
                     name: rows[0].username,
