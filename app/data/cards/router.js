@@ -24,6 +24,13 @@ router.get("", (req, res) => {
 		if(conErr) throw conErr;
 		connection.query(query, args, (err, rows) => {
 			if (err) throw err;
+			if(rows.length === 0) {
+				const msg = (query === stmts.getCardsByName) ? "Name not found" : "Id not found";
+				console.log("404".red, "GET /cards".bold, ": ", msg);
+				return res.status(404).json({
+					message: msg
+				});
+			}
 			res.json(rows);
 		});
 	});
