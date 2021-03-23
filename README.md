@@ -99,6 +99,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 The routers for Express are contained in their own folder and contain 2 files:
 - `router.js` is responsible for handling all incoming requests
 - `statements.js` contains all SQL statements used for that router.
+
 ## FAQ
 **Q:** The node scripts don't run! <br>
 **A:** You might have to run `npm run` in order to discover the scripts. If that doesn't solve the problem, double check if you're in the root directory. <br>

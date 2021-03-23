@@ -114,16 +114,28 @@ router.route("/:ouid")
 		}
 	});
 
-//TODO: No checks implemented. Do this when creating the DB Callback
 router.route("/:ouid/cards")
-	.get( (req, res) =>{
-		const ouid = parseInt(req.params.ouid);
-		res.json({
-			userid: ouid,
-			count: mock.cards().length,
-			cards: mock.cards()
+	.get( (req, res) => {
+		const ouid = parseInt(req.params.ouid), connection = mysql.createConnection(db.config);
+		connection.connect((conErr) => {
+			if (conErr) throw conErr;
+			connection.query(stmts.getUserCards, [ouid], (err, rows) => {
+				res.json({
+					userid: ouid,
+					count: rows.length,
+					cards: rows.map(result => {
+						return {
+							id: result.id,
+							name: result.name,
+							image: result.picture,
+							description: result.description,
+							cost: result.price
+						};
+					})
+				});
+			});
+			console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 		});
-		console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 	});
 
 //TODO: No checks implemented. Do this when creating the DB Callback
