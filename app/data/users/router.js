@@ -92,7 +92,6 @@ router.route('/:ouid')
             })
         })
     })
-
     //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
     .patch((req, res) => {
         const ouid = parseInt(req.params.ouid)
@@ -113,6 +112,17 @@ router.route('/:ouid')
             console.log("400".red, `PUT /users`.bold, ": ", "Malformed request");
             return res.status(400).send("The request body is incorrect");
         }
+    })
+
+router.route("/:ouid/cards")
+    .get( (req, res) =>{
+        const ouid = parseInt(req.params.ouid);
+        res.json({
+            userid: ouid,
+            count: mock.cards().length,
+            cards: mock.cards()
+        })
+        console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green)
     })
 
 module.exports = router
