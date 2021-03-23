@@ -71,18 +71,15 @@ router.route('')
 router.route('/:ouid')
     .get((req, res) => {
         const ouid = parseInt(req.params.ouid)
-        const query = mock.users.filter(user => user.userId === ouid)
-        switch (query.length) {
-            case 1:
-                console.log("200".green, `GET /users/${ouid}`.bold, ": ", "OK".bold.green)
-                return res.json(query)
-            case 0:
-                console.log("404".red, `GET /users/${ouid}`.bold, ": ", "User was not found");
-                return res.status(404).send(`The user with ID ${ouid} does not exist.`);
-            default:
-                console.log("500".bold.red, `GET /users/${ouid}`.bold, ": ", "Internal Server Error".bold.bgRed.white, "Server return non-compliant data: Data Integrity may be at risk!".bgRed.white)
-                return res.status(500).send("Internal Server Error")
-        }
+        const query = stmts.getUser
+        const connection = mysql.createConnection(db.config)
+        connection.connect((conErr) => {
+            if (conErr) throw conErr
+            connection.query(query, [ouid], (err, rows) => {
+                if(err) throw err
+                console.log(rows)
+            })
+        })
     })
 
     //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback

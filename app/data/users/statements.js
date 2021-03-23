@@ -1,9 +1,6 @@
 module.exports = {
-    getUsers: 'SELECT * FROM memestash.users;',
-    getUsersFiltered: 'SELECT * FROM memestash.users where username LIKE ?;',
-    addUser: 'INSERT INTO memestash.users(username, email, password, wallet) Values (?,?,?,wallet)',
-    getUser: `SELECT users.*, cards.* FROM memestash.users u
-                JOIN memestash.collections co ON u.id = co.user_id
-                JOIN memestash.cards ca ON co.card_id = ca.id
-                WHERE user_id = ?;`
+    getUsers: 'SELECT * FROM users;',
+    getUsersFiltered: 'SELECT * FROM users where username LIKE ?;',
+    addUser: 'INSERT INTO users(username, email, password, wallet) Values (?,?,?,wallet)',
+    getUser: 'SELECT users.* FROM users JOIN collections ON users.id = collections.user_id JOIN cards ON collections.card_id = cards.id WHERE users.id = ?;'
 }
