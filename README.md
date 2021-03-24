@@ -36,8 +36,8 @@ All password are encrypted using BCrypt encryption package. if you wish to manua
 ### Console
 The console will display the following things during it's lifetime:
 - Configuration information *(Like port configuration, etc...)*
-- Sucessfull requests
-- Unsuccessfull requests
+- Successful requests
+- Unsuccessful requests
 ### API Spec
 #### URL & Parameters & Body Validation
 URL, Parameter & Body validation is done with [Express OpenAPI Validator](https://www.npmjs.com/package/express-openapi-validator), which uses the OpenAPI spec sheet to check requests.
@@ -52,9 +52,9 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 #### Cards
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
-|GET|`/cards`|Gets all the cards registered in the system. Can be filtered using query parameters.|N/A|
-|GET|`/users/{ouid}/cards`|Gets the collection of cards of a user, identified by his id.|N/A|
-|PUT|`/users/{ouid}/cards/{cid}`|This endpoint is responsible for adding a card to the user’s collection. The price needs to be supplied in order to subtract it from the user’s wallet.|N/A|
+|GET|`/cards`|Gets all the cards registered in the system. Can be filtered using query parameters.|Implemented|
+|GET|`/users/{ouid}/cards`|Gets the collection of cards of a user, identified by his id.|Mock|
+|PUT|`/users/{ouid}/cards/{cid}`|This endpoint is responsible for adding a card to the user’s collection. The price needs to be supplied in order to subtract it from the user’s wallet.|Mock|
 #### Chats
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
@@ -62,16 +62,43 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 |GET|`/users/{ouid}/chats/{tuid}`|This endpoint will retrieve the chat between the user with the `ouid` and the user with the `tuid`.|N/A|
 |PATCH|`/users/{ouid}/chats/{tuid}`|This endpoint will add another message to the message queue between the user with the associated `ouid` and the user with the associated `tuid`.|N/A|
 |PUT|`/users/{ouid}/cards/{cid}`|This endpoint will start a message queue between 2 users. A initial message needs to be supplied with the request before a message queue is made.|N/A|
-#### Trades
-|HTTP Verb|Endpoint|Description|Stage?|
-|---|---|---|---|
-|GET|`/users/{ouid}/trades`|This endpoint is used to get incoming & outgoing trade requests.|N/A|
-|PUT|`/users/{ouid}/trades/{tuid}`|Adds a trade with a initial offer and/or requested items for that offer.|N/A|
-|PATCH|`/users/{ouid}/trades/{tid}`|This endpoint is used to accept or deny a trade request.|N/A|
 #### Wallet
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
 |PUT|`/users/{ouid}/wallet`|Adds a new amount of coins to the wallet.|N/A|
+
+## Directory Structure
+```
+.
+├── app -> Contains all the NodeJS application files
+│   ├── config
+│   │   ├── database.js
+│   │   └── ws.js
+│   ├── data
+│   │   ├── cards
+│   │   │   ├── router.js
+│   │   │   └── statements.js
+│   │   └── users
+│   │       ├── router.js
+│   │       └── statements.js
+│   ├── encrypt.js
+│   ├── main.js
+│   ├── mock.js
+│   └── openapi.yaml
+├── db -> Contains files used to fill & construct the DB
+│   ├── db_fill.sql
+│   └── db_structure.sql
+├── docker-compose.yaml -> File used in order to construct the database.
+├── markdown -> Contains files used in this README.md
+│   └── memestash_node.png
+├── package.json
+├── package-lock.json
+└── README.md
+```
+### `Data` routers
+The routers for Express are contained in their own folder and contain 2 files:
+- `router.js` is responsible for handling all incoming requests
+- `statements.js` contains all SQL statements used for that router.
 
 ## FAQ
 **Q:** The node scripts don't run! <br>
