@@ -45,11 +45,11 @@ router.route("")
 						if (err.errno === 1062) {
 							console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken");
 							res.status(409).send("This user already exists");
-						} else{
+						} else {
 							throw err;
 						}
 						connection.end();
-					}else {
+					} else {
 						res.status(201).json({
 							id: rows.insertId,
 							name: name
@@ -71,8 +71,8 @@ router.route("/:ouid")
 		connection.connect((conErr) => {
 			if (conErr) throw conErr;
 			connection.query(query, [ouid], (err, rows) => {
-				if(err) throw err;
-				if(rows.length === 0) return res.status(404).json({message: "Unable to find user"});
+				if (err) throw err;
+				if (rows.length === 0) return res.status(404).json({message: "Unable to find user"});
 				res.json({
 					id: rows[0].user_id,
 					name: rows[0].username,
@@ -115,27 +115,57 @@ router.route("/:ouid")
 	});
 
 router.route("/:ouid/cards")
-	.get( (req, res) => {
+	.get((req, res) => {
 		const ouid = parseInt(req.params.ouid), connection = mysql.createConnection(db.config);
 		connection.connect((conErr) => {
 			if (conErr) throw conErr;
 			connection.query(stmts.getUserCards, [ouid], (err, rows) => {
-				res.json({
-					userid: ouid,
-					count: rows.length,
-					cards: rows.map(result => {
-						return {
-							id: result.id,
-							name: result.name,
-							image: result.picture,
-							description: result.description,
-							cost: result.price
-						};
-					})
-				});
+				if (rows.length === 0) {
+					connection.end();
+					userCheck(ouid).then((userNotExists) => {
+						if (userNotExists) {
+							res.status(404).json({message: "The user could not be found"});
+						} else {
+							res.json({
+								userid: ouid,
+								count: rows.length,
+								cards: []
+							});
+						}
+					}).catch((err) => {
+						throw err;
+					});
+				} else {
+					res.json({
+						userid: ouid,
+						count: rows.length,
+						cards: rows.map(result => {
+							return {
+								id: result.id,
+								name: result.name,
+								image: result.picture,
+								description: result.description,
+								cost: result.price
+							};
+						})
+					});
+					connection.end();
+				}
 			});
-			console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 		});
+
+		function userCheck(userId) {
+			return new Promise(((resolve, reject) => {
+				const checkConnection = mysql.createConnection(db.config);
+				checkConnection.connect((err) => {
+					if (err) reject(err);
+					checkConnection.query(stmts.getUser, [userId], (checkErr, checkRows) => {
+						if (checkErr) reject(checkErr);
+						resolve(checkRows.length === 0);
+					});
+				});
+			}));
+		}
 	});
 
 //TODO: No checks implemented. Do this when creating the DB Callback

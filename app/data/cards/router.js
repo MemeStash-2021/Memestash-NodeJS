@@ -35,6 +35,7 @@ router.get("", (req, res) => {
 		});
 	});
 	console.log("200".yellow, "GET /cards".bold, ": ", "OK".bold.green);
+	connection.end();
 });
 
 module.exports = router;
