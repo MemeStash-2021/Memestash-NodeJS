@@ -193,4 +193,24 @@ router.route("/:ouid/wallet")
 		console.log("200".yellow, `GET /users/${ouid}/wallet`.bold, ": ", "OK".bold.green);
 	}));
 
+router.route("/:ouid/chats")
+	.get(((req, res) => {
+		let json = [];
+		for(let i = 0; i<5; i++){
+			json.push({
+				correspondent: {
+					id: 1,
+					name: `user ${i}`
+				},
+				latestMessage: {
+					message: "This is a example message",
+					date: "2021-03-25T16:58:27.363Z",
+					sender: `user ${i}`,
+					senderId: i
+				}
+			});
+		}
+		res.json(json);
+	}));
+
 module.exports = router;

@@ -219,7 +219,7 @@ paths:
                   properties:
                     correspondent:
                       $ref: "#/components/schemas/ShortUser"
-                    lastestMessage:
+                    latestMessage:
                       $ref: "#/components/schemas/Message"
         '404':
           $ref: "#/components/responses/404"
