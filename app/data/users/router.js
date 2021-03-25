@@ -92,6 +92,7 @@ router.route("/:ouid")
 			});
 		});
 	})
+
 //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
 	.patch((req, res) => {
 		const ouid = parseInt(req.params.ouid);
@@ -178,5 +179,18 @@ router.route("/:ouid/cards/:cid")
 			cards: mock.cards()
 		});
 	});
+
+//TODO: In real callback, implement logic & parameter checking
+router.route("/:ouid/wallet")
+	.put(((req, res) => {
+		const ouid = parseInt(req.params.ouid);
+		res.json({
+			id: ouid,
+			name : mock.users[0].username,
+			wallet: 80000,
+			cards: mock.cards()
+		});
+		console.log("200".yellow, `GET /users/${ouid}/wallet`.bold, ": ", "OK".bold.green);
+	}));
 
 module.exports = router;
