@@ -65,7 +65,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 #### Wallet
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
-|PUT|`/users/{ouid}/wallet`|Adds a new amount of coins to the wallet.|N/A|
+|PUT|`/users/{ouid}/wallet`|Adds a new amount of coins to the wallet.|Mock|
 
 ## Directory Structure
 ```
