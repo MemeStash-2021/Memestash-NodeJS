@@ -219,7 +219,7 @@ paths:
                   properties:
                     correspondent:
                       $ref: "#/components/schemas/ShortUser"
-                    lastestMessage:
+                    latestMessage:
                       $ref: "#/components/schemas/Message"
         '404':
           $ref: "#/components/responses/404"
@@ -240,7 +240,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Message"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
         '404':
           $ref: "#/components/responses/404"
         '500':
