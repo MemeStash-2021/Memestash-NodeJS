@@ -213,4 +213,19 @@ router.route("/:ouid/chats")
 		res.json(json);
 	}));
 
+router.route("/:ouid/chats/:tuid")
+	.get(((req, res) => {
+		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid);
+		let json = [];
+		for(let i = 0; i<10; i++){
+			json.push({
+				message: "This is a example message",
+				date: `2021-03-2${5-i}T17:13:20.599Z`,
+				sender: (i % 2 === 0) ? "Mori" : "Ruiner",
+				senderId: (i % 2 === 0) ? ouid : tuid
+			});
+		}
+		res.json(json);
+	}));
+
 module.exports = router;
