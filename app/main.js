@@ -1,6 +1,7 @@
 //Node Constants
 const ws = require("./config/ws.js");
 const OpenApiValidator = require("express-openapi-validator");
+const cors = require("cors");
 require("colors");
 
 //Express Routers
@@ -19,6 +20,8 @@ function init() {
 		validateRequests: true,
 		validateApiSpec: true
 	}));
+	/*Set up CORS Handler*/
+	ws.app.use(cors());
 	/*Set up Validator Handler*/
 	ws.app.use((err, req, res, next) => {
 		res.status(err.status || 500).json({
