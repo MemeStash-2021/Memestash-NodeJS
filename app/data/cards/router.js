@@ -32,10 +32,11 @@ router.get("", (req, res) => {
 				});
 			}
 			res.json(rows);
+			connection.end();
 		});
 	});
 	console.log("200".yellow, "GET /cards".bold, ": ", "OK".bold.green);
-	connection.end();
+
 });
 
 module.exports = router;
