@@ -83,7 +83,9 @@ router.route("/:ouid")
 							name: result.name,
 							image: result.picture,
 							description: result.description,
-							cost: result.price
+							cost: result.price,
+							views: result.views,
+							likes: result.likes
 						};
 					})
 				});
@@ -146,7 +148,9 @@ router.route("/:ouid/cards")
 								name: result.name,
 								image: result.picture,
 								description: result.description,
-								cost: result.price
+								cost: result.price,
+								views: result.views,
+								likes: result.likes
 							};
 						})
 					});
