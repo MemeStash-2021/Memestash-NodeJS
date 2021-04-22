@@ -9,7 +9,7 @@ const saltRounds = 10;
 const stmts = require("./statements.js");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
-const wrapper = require("../wrappers");
+const wrapper = require("../util/wrappers.js");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
