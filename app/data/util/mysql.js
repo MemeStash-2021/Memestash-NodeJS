@@ -1,7 +1,7 @@
 const config = require("../../config/database.js");
 const mysql = require("mysql");
 
-exports.mySQLFetch = (query, args = []) => {
+exports.fetch = (query, args = []) => {
 	return new Promise((resolve, reject) => {
 		let connection = mysql.createConnection(config.config);
 		return connection.connect((conErr) => {

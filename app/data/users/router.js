@@ -8,7 +8,7 @@ const saltRounds = 10;
 // App Constants
 const stmts = require("./statements.js");
 const router = express.Router();
-const db = require("../util/mysql.js");
+const mySQL = require("../util/mysql.js");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
@@ -18,7 +18,7 @@ router.route("")
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
-		db.mySQLFetch(query, args)
+		mySQL.fetch(query, args)
 			.then(data => {
 				res.json(data.map(user => {
 					delete user.password;
@@ -43,7 +43,7 @@ router.route("")
 				res.status(500).send("Internal server error");
 			});
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
-		db.mySQLFetch(query, args)
+		mySQL.fetch(query, args)
 			.then(data => {
 				res.status(201).json({
 					id: data.insertId,
@@ -64,7 +64,7 @@ router.route("")
 router.route("/:ouid")
 	.get((req, res) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
-		db.mySQLFetch(query, args)
+		mySQL.fetch(query, args)
 			.then(result => {
 				(result.length === 0)
 					? res.status(404).json({message: "Unable to find user"})
@@ -115,7 +115,7 @@ router.route("/:ouid")
 router.route("/:ouid/cards")
 	.get((req, res) => {
 		const query = stmts.getUserCards, ouid = parseInt(req.params.ouid), args = [ouid];
-		db.mySQLFetch(query, args)
+		mySQL.fetch(query, args)
 			.then(result => {
 				if (result.length === 0) {
 					userCheck(ouid).then((userNotExists) => {(userNotExists) 
@@ -152,7 +152,7 @@ router.route("/:ouid/cards")
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
-				db.mySQLFetch(stmts.getUser, [userId])
+				mySQL.fetch(stmts.getUser, [userId])
 					.then(data => resolve(data.length === 0))
 					.catch(err => reject(err));
 			}));

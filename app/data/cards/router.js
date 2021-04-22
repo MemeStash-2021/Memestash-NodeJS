@@ -2,13 +2,13 @@
 const express = require("express");
 
 // App Constants
-const db = require("../util/mysql.js");
+const mySQL = require("../util/mysql.js");
 const stmts = require("./statements.js");
 const router = express.Router();
 
 router.get("", (req, res) => {
 	const query = chooseQuery(req), args = constructArgs(req);
-	db.mySQLFetch(query, args)
+	mySQL.fetch(query, args)
 		.then(data =>{
 			if(data.length === 0) {
 				const msg = (query === stmts.getCardsByName) ? "Name not found" : "Id not found";
