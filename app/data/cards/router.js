@@ -1,41 +1,44 @@
 // Node constants
 const express = require("express");
-const mysql = require("mysql");
 
 // App Constants
-const db = require("../../config/database.js");
+const db = require("../util/mysql.js");
 const stmts = require("./statements.js");
 const router = express.Router();
 
 router.get("", (req, res) => {
-	const name = req.query.name;
-	const id = req.query.id;
-	let query = stmts.getCards;
-	let args= undefined;
-	if(id !== undefined){
-		query = stmts.getCardById;
-		args = [id];
-	} else if(name !== undefined){
-		query = stmts.getCardsByName;
-		args = [`%${name}%`];
-	}
-	const connection = mysql.createConnection(db.config);
-	connection.connect((conErr) => {
-		if(conErr) throw conErr;
-		connection.query(query, args, (err, rows) => {
-			if (err) throw err;
-			if(rows.length === 0) {
+	const query = chooseQuery(req), args = constructArgs(req);
+	db.mySQLFetch(query, args)
+		.then(data =>{
+			if(data.length === 0) {
 				const msg = (query === stmts.getCardsByName) ? "Name not found" : "Id not found";
 				console.log("404".red, "GET /cards".bold, ": ", msg);
-				return res.status(404).json({
-					message: msg
-				});
+				res.status(404).json({message: msg});
 			}
-			res.json(rows);
-			connection.end();
+			else{
+				console.log("200".yellow, "GET /cards".bold, ": ", "OK".bold.green);
+				res.json(data);
+			}
+		})
+		.catch(err => {
+			throw err;
 		});
-	});
-	console.log("200".yellow, "GET /cards".bold, ": ", "OK".bold.green);
+	
+	function chooseQuery(params){
+		if(params.query.id !== undefined){
+			return stmts.getCardById;
+		} else if(params.query.name !== undefined){
+			return stmts.getCardsByName;
+		}
+		return stmts.getCards;
+	}
+	function constructArgs(params) {
+		if(params.query.id !== undefined){
+			return [params.query.id];
+		} else if(params.query.name !== undefined){
+			return [`%${params.query.name}%`];
+		}
+	}
 });
 
 module.exports = router;

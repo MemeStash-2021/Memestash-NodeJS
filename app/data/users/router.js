@@ -2,16 +2,13 @@
 
 // Node constants
 const express = require("express");
-const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-
 // App Constants
-const db = require("../../config/database.js");
 const stmts = require("./statements.js");
 const router = express.Router();
-const caller = require("../util/mysql.js");
+const db = require("../util/mysql.js");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
@@ -21,7 +18,7 @@ router.route("")
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
-		caller.mySQLFetch(query, args)
+		db.mySQLFetch(query, args)
 			.then(data => {
 				res.json(data.map(user => {
 					delete user.password;
@@ -29,11 +26,11 @@ router.route("")
 					delete user.wallet;
 					return user;
 				}));
+				console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 			})
 			.catch(error => {
 				throw error;
 			});
-		console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 	})
 	.put((async (req, res) => {
 		//TODO: Fix the error handling and let Validator do most of the work!
@@ -46,7 +43,7 @@ router.route("")
 				res.status(500).send("Internal server error");
 			});
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
-		caller.mySQLFetch(query, args)
+		db.mySQLFetch(query, args)
 			.then(data => {
 				res.status(201).json({
 					id: data.insertId,
@@ -67,7 +64,7 @@ router.route("")
 router.route("/:ouid")
 	.get((req, res) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
-		caller.mySQLFetch(query, args)
+		db.mySQLFetch(query, args)
 			.then(result => {
 				(result.length === 0)
 					? res.status(404).json({message: "Unable to find user"})
@@ -118,19 +115,16 @@ router.route("/:ouid")
 router.route("/:ouid/cards")
 	.get((req, res) => {
 		const query = stmts.getUserCards, ouid = parseInt(req.params.ouid), args = [ouid];
-		caller.mySQLFetch(query, args)
+		db.mySQLFetch(query, args)
 			.then(result => {
 				if (result.length === 0) {
-					userCheck(ouid).then((userNotExists) => {
-						if (userNotExists) {
-							res.status(404).json({message: "The user could not be found"});
-						} else {
-							res.json({
-								userid: ouid,
-								count: result.length,
-								cards: []
-							});
-						}
+					userCheck(ouid).then((userNotExists) => {(userNotExists) 
+						? res.status(404).json({message: "The user could not be found"})
+						: res.json({
+							userid: ouid,
+							count: result.length,
+							cards: []
+						});
 					}).catch((err) => {
 						throw err;
 					});
@@ -158,7 +152,7 @@ router.route("/:ouid/cards")
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
-				caller.mySQLFetch(stmts.getUser, [userId])
+				db.mySQLFetch(stmts.getUser, [userId])
 					.then(data => resolve(data.length === 0))
 					.catch(err => reject(err));
 			}));
