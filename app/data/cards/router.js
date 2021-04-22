@@ -38,6 +38,7 @@ router.get("", (req, res) => {
 		} else if(params.query.name !== undefined){
 			return [`%${params.query.name}%`];
 		}
+		return [];
 	}
 });
 
