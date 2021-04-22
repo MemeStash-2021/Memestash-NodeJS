@@ -20,16 +20,18 @@ create table cards
     name        varchar(60) unique not null,
     picture     text               null,
     price       int                not null,
-    description text               not null
+    description text               not null,
+    views       int                not null,
+    likes       int                not null
 );
 
 create table users
 (
     id       int auto_increment primary key unique,
-    username varchar(60) unique not null,
-    email       varchar (255) unique not null,
-    password text               not null,
-    wallet   int                not null
+    username varchar(60) unique  not null,
+    email    varchar(255) unique not null,
+    password text                not null,
+    wallet   int                 not null
 );
 
 create table collections

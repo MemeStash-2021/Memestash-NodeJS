@@ -558,10 +558,10 @@ components:
         cost:
           type: integer
           example: 800
-        likes:
+        views:
           type: integer
           example: 8000
-        hearts:
+        likes:
           type: integer
           example: 5000
     Collection:
