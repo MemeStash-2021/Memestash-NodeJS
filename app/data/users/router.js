@@ -2,97 +2,82 @@
 
 // Node constants
 const express = require("express");
-const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 // App Constants
-const db = require("../../config/database.js");
 const stmts = require("./statements.js");
 const router = express.Router();
+const mySQL = require("../util/mysql.js");
+const wrapper = require("../util/wrappers.js");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
 router.route("")
 	.get((req, res) => {
-		const name = req.query.name, connection = mysql.createConnection(db.config),
-			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered;
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
-				if (err) throw err;
-				res.json(rows.map(user => {
-					delete user.password;
-					delete user.email;
-					delete user.wallet;
-					return user;
-				}));
+		const name = req.query.name,
+			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
+			args = (name === undefined) ? undefined : ["%" + name + "%"];
+		mySQL.fetch(query, args)
+			.then(data => {
+				res.json(data.map(user => wrapper.simpleUser(user)));
 				console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
-				connection.end();
+			})
+			.catch(error => {
+				throw error;
 			});
-		});
 	})
-	.put(((req, res) => {
-		const connection = mysql.createConnection(db.config), name = req.body.username, email = req.body.email,
-			query = stmts.addUser;
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			bcrypt.hash(req.body.password, saltRounds).then(hash => {
-				connection.query(query, [name, email, hash], (err, rows) => {
-					//TODO: Fix the error handling and let Validator do most of the work!
-					if (err) {
-						if (err.errno === 1062) {
-							console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken");
-							res.status(409).send("This user already exists");
-						} else {
-							throw err;
-						}
-						connection.end();
-					} else {
-						res.status(201).json({
-							id: rows.insertId,
-							name: name
-						});
-						console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green);
-						connection.end();
-					}
-				});
-			}).catch(err => {
+	.put((async (req, res) => {
+		//TODO: Fix the error handling and let Validator do most of the work!
+		let hash = await bcrypt.hash(req.body.password, saltRounds).then(result => {return result;})
+			.catch(err => {
 				console.log("500".bold.red, "PUT /users".bold.white.bgRed, `The password was not able to be encrypted: ${err}`.bold.white.bg);
 				res.status(500).send("Internal server error");
 			});
-		});
+		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
+		mySQL.fetch(query, args)
+			.then(data => {
+				res.status(201).json(wrapper.userCreated(data, req.body.username));
+				console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green);
+			})
+			.catch(err => {
+				if (err.errno === 1062) {
+					console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken");
+					res.status(409).send("This user already exists");
+				} else {
+					throw err;
+				}
+			});
 	}));
 
 router.route("/:ouid")
 	.get((req, res) => {
-		const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(query, [ouid], (err, rows) => {
+		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
+		mySQL.fetch(query, args)
+			.then(result => {
+				(result.length === 0)
+					? res.status(404).json({message: "Unable to find user"})
+					: res.json({
+						id: result[0].user_id,
+						name: result[0].username,
+						wallet: result[0].wallet,
+						cards: result.map(card => {
+							return {
+								id: card.id,
+								name: card.name,
+								image: card.picture,
+								description: card.description,
+								cost: card.price,
+								views: card.views,
+								likes: card.likes
+							};
+						})
+					});
+			})
+			.catch(err => {
 				if (err) throw err;
-				if (rows.length === 0) return res.status(404).json({message: "Unable to find user"});
-				res.json({
-					id: rows[0].user_id,
-					name: rows[0].username,
-					wallet: rows[0].wallet,
-					cards: rows.map(result => {
-						return {
-							id: result.id,
-							name: result.name,
-							image: result.picture,
-							description: result.description,
-							cost: result.price,
-							views: result.views,
-							likes: result.likes
-						};
-					})
-				});
-				console.log("200".yellow, `GET /users/${ouid}`.bold, ": ", "OK".bold.green);
-				connection.end();
 			});
-		});
 	})
 
 //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
@@ -119,59 +104,33 @@ router.route("/:ouid")
 
 router.route("/:ouid/cards")
 	.get((req, res) => {
-		const ouid = parseInt(req.params.ouid), connection = mysql.createConnection(db.config);
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(stmts.getUserCards, [ouid], (err, rows) => {
-				if (rows.length === 0) {
-					connection.end();
-					userCheck(ouid).then((userNotExists) => {
-						if (userNotExists) {
-							res.status(404).json({message: "The user could not be found"});
-						} else {
-							res.json({
-								userid: ouid,
-								count: rows.length,
-								cards: []
-							});
-						}
+		const query = stmts.getUserCards, ouid = parseInt(req.params.ouid), args = [ouid];
+		mySQL.fetch(query, args)
+			.then(result => {
+				if (result.length === 0) {
+					userCheck(ouid).then((userNotExists) => {(userNotExists) 
+						? res.status(404).json({message: "The user could not be found"})
+						: res.json(wrapper.fullUser(ouid, result, true));
 					}).catch((err) => {
 						throw err;
 					});
 				} else {
-					res.json({
-						userid: ouid,
-						count: rows.length,
-						cards: rows.map(result => {
-							return {
-								id: result.id,
-								name: result.name,
-								image: result.picture,
-								description: result.description,
-								cost: result.price,
-								views: result.views,
-								likes: result.likes
-							};
-						})
-					});
-					connection.end();
+					res.json(wrapper.fullUser(ouid, result));
 				}
+			})
+			.catch(err => {
+				throw err;
 			});
-		});
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
-				const checkConnection = mysql.createConnection(db.config);
-				checkConnection.connect((err) => {
-					if (err) reject(err);
-					checkConnection.query(stmts.getUser, [userId], (checkErr, checkRows) => {
-						if (checkErr) reject(checkErr);
-						resolve(checkRows.length === 0);
-					});
-				});
+				mySQL.fetch(stmts.getUser, [userId])
+					.then(data => resolve(data.length === 0))
+					.catch(err => reject(err));
 			}));
 		}
-	});
+	})
+;
 
 //TODO: No checks implemented. Do this when creating the DB Callback
 router.route("/:ouid/cards/:cid")
@@ -190,7 +149,7 @@ router.route("/:ouid/wallet")
 		const ouid = parseInt(req.params.ouid);
 		res.json({
 			id: ouid,
-			name : mock.users[0].username,
+			name: mock.users[0].username,
 			wallet: 80000,
 			cards: mock.cards()
 		});
@@ -200,7 +159,7 @@ router.route("/:ouid/wallet")
 router.route("/:ouid/chats")
 	.get(((req, res) => {
 		let json = [];
-		for(let i = 0; i<5; i++){
+		for (let i = 0; i < 5; i++) {
 			json.push({
 				correspondent: {
 					id: 1,
@@ -221,24 +180,24 @@ router.route("/:ouid/chats/:tuid")
 	.get(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid);
 		let json = [];
-		for(let i = 0; i<10; i++){
+		for (let i = 0; i < 10; i++) {
 			json.push({
 				message: "This is a example message",
-				date: `2021-03-2${5-i}T17:13:20.599Z`,
+				date: `2021-03-2${5 - i}T17:13:20.599Z`,
 				sender: (i % 2 === 0) ? "Mori" : "Ruiner",
 				senderId: (i % 2 === 0) ? ouid : tuid
 			});
 		}
 		res.json(json);
 	}))
-	// TODO: Don't forget to implement the actual query parameters
+// TODO: Don't forget to implement the actual query parameters
 	.patch((req, res) => {
-		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message=req.body.message;
+		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
 		let json = [];
-		for(let i = 0; i<10; i++){
+		for (let i = 0; i < 10; i++) {
 			json.push({
 				message: (i === 0) ? message : "This is a example message",
-				date: `2021-03-2${5-i}T17:13:20.599Z`,
+				date: `2021-03-2${5 - i}T17:13:20.599Z`,
 				sender: (i % 2 === 0) ? "Mori" : "Ruiner",
 				senderId: (i % 2 === 0) ? ouid : tuid
 			});
@@ -256,7 +215,7 @@ router.route("/:ouid/chats/:tuid")
 		});
 	})
 	.put(((req, res) => {
-		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message=req.body.message;
+		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
 		res.json({
 			user: {
 				id: ouid,
