@@ -9,23 +9,19 @@ const saltRounds = 10;
 const stmts = require("./statements.js");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
+const wrapper = require("../wrappers");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
 router.route("")
-	.get(async (req, res) => {
+	.get((req, res) => {
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
 		mySQL.fetch(query, args)
 			.then(data => {
-				res.json(data.map(user => {
-					delete user.password;
-					delete user.email;
-					delete user.wallet;
-					return user;
-				}));
+				res.json(data.map(user => wrapper.simpleUser(user)));
 				console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 			})
 			.catch(error => {
@@ -34,10 +30,7 @@ router.route("")
 	})
 	.put((async (req, res) => {
 		//TODO: Fix the error handling and let Validator do most of the work!
-		let hash = await bcrypt.hash(req.body.password, saltRounds)
-			.then(result => {
-				return result;
-			})
+		let hash = await bcrypt.hash(req.body.password, saltRounds).then(result => {return result;})
 			.catch(err => {
 				console.log("500".bold.red, "PUT /users".bold.white.bgRed, `The password was not able to be encrypted: ${err}`.bold.white.bg);
 				res.status(500).send("Internal server error");
@@ -45,10 +38,7 @@ router.route("")
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
 		mySQL.fetch(query, args)
 			.then(data => {
-				res.status(201).json({
-					id: data.insertId,
-					name: req.body.username
-				});
+				res.status(201).json(wrapper.userCreated(data, req.body.username));
 				console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green);
 			})
 			.catch(err => {
@@ -120,30 +110,12 @@ router.route("/:ouid/cards")
 				if (result.length === 0) {
 					userCheck(ouid).then((userNotExists) => {(userNotExists) 
 						? res.status(404).json({message: "The user could not be found"})
-						: res.json({
-							userid: ouid,
-							count: result.length,
-							cards: []
-						});
+						: res.json(wrapper.fullUser(ouid, result, true));
 					}).catch((err) => {
 						throw err;
 					});
 				} else {
-					res.json({
-						userid: ouid,
-						count: result.length,
-						cards: result.map(card => {
-							return {
-								id: card.id,
-								name: card.name,
-								image: card.picture,
-								description: card.description,
-								cost: card.price,
-								views: card.views,
-								likes: card.likes
-							};
-						})
-					});
+					res.json(wrapper.fullUser(ouid, result));
 				}
 			})
 			.catch(err => {
