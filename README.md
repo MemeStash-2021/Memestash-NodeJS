@@ -23,7 +23,7 @@ This repo comes included with a `docker-compose.yaml` file. With this, you can e
     - **Port**: 3306
     - **Username**: root
     - **Password**: Friday13th!
-5.  Run the `db-structure.sql` and `db-filler.sql` **(W.I.P.)**.
+5.  Run the `db-structure.sql` and `db-filler.sql`.
 
 That's it! The database should be configured and all the needed users and their permissions should be made. You can run the server by typing `npm run server` in a CLI *(**Note:** Make sure you're in the cloned directory)*
 
@@ -58,10 +58,10 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 #### Chats
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
-|GET|`/users/{ouid}/chats`|This endpoint is used to retrieve the messages of a user.|N/A|
-|GET|`/users/{ouid}/chats/{tuid}`|This endpoint will retrieve the chat between the user with the `ouid` and the user with the `tuid`.|N/A|
-|PATCH|`/users/{ouid}/chats/{tuid}`|This endpoint will add another message to the message queue between the user with the associated `ouid` and the user with the associated `tuid`.|N/A|
-|PUT|`/users/{ouid}/cards/{cid}`|This endpoint will start a message queue between 2 users. A initial message needs to be supplied with the request before a message queue is made.|N/A|
+|GET|`/users/{ouid}/chats`|This endpoint is used to retrieve the messages of a user.|Mock|
+|GET|`/users/{ouid}/chats/{tuid}`|This endpoint will retrieve the chat between the user with the `ouid` and the user with the `tuid`.|Mock|
+|PATCH|`/users/{ouid}/chats/{tuid}`|This endpoint will add another message to the message queue between the user with the associated `ouid` and the user with the associated `tuid`.|Mock|
+|PUT|`/users/{ouid}/cards/{cid}`|This endpoint will start a message queue between 2 users. A initial message needs to be supplied with the request before a message queue is made.|Mock|
 #### Wallet
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
@@ -75,12 +75,22 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 │   │   ├── database.js
 │   │   └── ws.js
 │   ├── data
+│   │   ├── auth
+│   │   │   ├── router.js
+│   │   │   └── statements.js
 │   │   ├── cards
 │   │   │   ├── cardRouter.js
+│   │   │   ├── statements.js
+│   │   │   └── userRouter.js
+│   │   ├── chat
+│   │   │   ├── router.js
 │   │   │   └── statements.js
-│   │   └── users
-│   │       ├── cardRouter.js
-│   │       └── statements.js
+│   │   ├── users
+│   │   │   ├── router.js
+│   │   │   └── statements.js
+│   │   └── util
+│   │       ├── mysql.js -> File that transforms DB Call to One-liner
+│   │       └── wrappers.js -> File that contains custom JSON responses
 │   ├── encrypt.js
 │   ├── main.js
 │   ├── mock.js
@@ -97,8 +107,10 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 ```
 ### `Data` routers
 The routers for Express are contained in their own folder and contain 2 files:
-- `cardRouter.js` is responsible for handling all incoming requests
+- `<prefix>router.js` is responsible for handling all incoming requests
 - `statements.js` contains all SQL statements used for that cardRouter.
+
+The routers are split by use case. Note that sometimes, 2 or more routers can be present within 1 folder.
 
 ## FAQ
 **Q:** The node scripts don't run! <br>
