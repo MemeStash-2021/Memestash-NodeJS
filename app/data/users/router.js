@@ -22,7 +22,7 @@ router.route("")
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
 		caller.mySQLFetch(query, args)
-			.then( data =>{
+			.then(data => {
 				res.json(data.map(user => {
 					delete user.password;
 					delete user.email;
@@ -68,51 +68,29 @@ router.route("/:ouid")
 	.get((req, res) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
 		caller.mySQLFetch(query, args)
-			.then(result => res.json({
-				id: result[0].user_id,
-				name: result[0].username,
-				wallet: result[0].wallet,
-				cards: result.map(card => {
-					return {
-						id: card.id,
-						name: card.name,
-						image: card.picture,
-						description: card.description,
-						cost: card.price,
-						views: card.views,
-						likes: card.likes
-					};
-				})
-			}))
+			.then(result => {
+				(result.length === 0)
+					? res.status(404).json({message: "Unable to find user"})
+					: res.json({
+						id: result[0].user_id,
+						name: result[0].username,
+						wallet: result[0].wallet,
+						cards: result.map(card => {
+							return {
+								id: card.id,
+								name: card.name,
+								image: card.picture,
+								description: card.description,
+								cost: card.price,
+								views: card.views,
+								likes: card.likes
+							};
+						})
+					});
+			})
 			.catch(err => {
 				if (err) throw err;
 			});
-		/*const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(query, [ouid], (err, rows) => {
-				if (err) throw err;
-				if (rows.length === 0) return res.status(404).json({message: "Unable to find user"});
-				res.json({
-					id: rows[0].user_id,
-					name: rows[0].username,
-					wallet: rows[0].wallet,
-					cards: rows.map(result => {
-						return {
-							id: result.id,
-							name: result.name,
-							image: result.picture,
-							description: result.description,
-							cost: result.price,
-							views: result.views,
-							likes: result.likes
-						};
-					})
-				});
-				console.log("200".yellow, `GET /users/${ouid}`.bold, ": ", "OK".bold.green);
-				connection.end();
-			});
-		});*/
 	})
 
 //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
@@ -139,19 +117,17 @@ router.route("/:ouid")
 
 router.route("/:ouid/cards")
 	.get((req, res) => {
-		const ouid = parseInt(req.params.ouid), connection = mysql.createConnection(db.config);
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(stmts.getUserCards, [ouid], (err, rows) => {
-				if (rows.length === 0) {
-					connection.end();
+		const query = stmts.getUserCards, ouid = parseInt(req.params.ouid), args = [ouid];
+		caller.mySQLFetch(query, args)
+			.then(result => {
+				if (result.length === 0) {
 					userCheck(ouid).then((userNotExists) => {
 						if (userNotExists) {
 							res.status(404).json({message: "The user could not be found"});
 						} else {
 							res.json({
 								userid: ouid,
-								count: rows.length,
+								count: result.length,
 								cards: []
 							});
 						}
@@ -161,37 +137,34 @@ router.route("/:ouid/cards")
 				} else {
 					res.json({
 						userid: ouid,
-						count: rows.length,
-						cards: rows.map(result => {
+						count: result.length,
+						cards: result.map(card => {
 							return {
-								id: result.id,
-								name: result.name,
-								image: result.picture,
-								description: result.description,
-								cost: result.price,
-								views: result.views,
-								likes: result.likes
+								id: card.id,
+								name: card.name,
+								image: card.picture,
+								description: card.description,
+								cost: card.price,
+								views: card.views,
+								likes: card.likes
 							};
 						})
 					});
-					connection.end();
 				}
+			})
+			.catch(err => {
+				throw err;
 			});
-		});
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
-				const checkConnection = mysql.createConnection(db.config);
-				checkConnection.connect((err) => {
-					if (err) reject(err);
-					checkConnection.query(stmts.getUser, [userId], (checkErr, checkRows) => {
-						if (checkErr) reject(checkErr);
-						resolve(checkRows.length === 0);
-					});
-				});
+				caller.mySQLFetch(stmts.getUser, [userId])
+					.then(data => resolve(data.length === 0))
+					.catch(err => reject(err));
 			}));
 		}
-	});
+	})
+;
 
 //TODO: No checks implemented. Do this when creating the DB Callback
 router.route("/:ouid/cards/:cid")
@@ -210,7 +183,7 @@ router.route("/:ouid/wallet")
 		const ouid = parseInt(req.params.ouid);
 		res.json({
 			id: ouid,
-			name : mock.users[0].username,
+			name: mock.users[0].username,
 			wallet: 80000,
 			cards: mock.cards()
 		});
@@ -220,7 +193,7 @@ router.route("/:ouid/wallet")
 router.route("/:ouid/chats")
 	.get(((req, res) => {
 		let json = [];
-		for(let i = 0; i<5; i++){
+		for (let i = 0; i < 5; i++) {
 			json.push({
 				correspondent: {
 					id: 1,
@@ -241,24 +214,24 @@ router.route("/:ouid/chats/:tuid")
 	.get(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid);
 		let json = [];
-		for(let i = 0; i<10; i++){
+		for (let i = 0; i < 10; i++) {
 			json.push({
 				message: "This is a example message",
-				date: `2021-03-2${5-i}T17:13:20.599Z`,
+				date: `2021-03-2${5 - i}T17:13:20.599Z`,
 				sender: (i % 2 === 0) ? "Mori" : "Ruiner",
 				senderId: (i % 2 === 0) ? ouid : tuid
 			});
 		}
 		res.json(json);
 	}))
-	// TODO: Don't forget to implement the actual query parameters
+// TODO: Don't forget to implement the actual query parameters
 	.patch((req, res) => {
-		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message=req.body.message;
+		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
 		let json = [];
-		for(let i = 0; i<10; i++){
+		for (let i = 0; i < 10; i++) {
 			json.push({
 				message: (i === 0) ? message : "This is a example message",
-				date: `2021-03-2${5-i}T17:13:20.599Z`,
+				date: `2021-03-2${5 - i}T17:13:20.599Z`,
 				sender: (i % 2 === 0) ? "Mori" : "Ruiner",
 				senderId: (i % 2 === 0) ? ouid : tuid
 			});
@@ -276,7 +249,7 @@ router.route("/:ouid/chats/:tuid")
 		});
 	})
 	.put(((req, res) => {
-		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message=req.body.message;
+		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
 		res.json({
 			user: {
 				id: ouid,
