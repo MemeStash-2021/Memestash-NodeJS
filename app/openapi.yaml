@@ -558,6 +558,12 @@ components:
         cost:
           type: integer
           example: 800
+        likes:
+          type: integer
+          example: 8000
+        hearts:
+          type: integer
+          example: 5000
     Collection:
       type: object
       properties:
