@@ -33,39 +33,35 @@ router.route("")
 			.catch(error => {
 				throw error;
 			});
-		
 		console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 	})
-	.put(((req, res) => {
-		const connection = mysql.createConnection(db.config), name = req.body.username, email = req.body.email,
-			query = stmts.addUser;
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			bcrypt.hash(req.body.password, saltRounds).then(hash => {
-				connection.query(query, [name, email, hash], (err, rows) => {
-					//TODO: Fix the error handling and let Validator do most of the work!
-					if (err) {
-						if (err.errno === 1062) {
-							console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken");
-							res.status(409).send("This user already exists");
-						} else {
-							throw err;
-						}
-						connection.end();
-					} else {
-						res.status(201).json({
-							id: rows.insertId,
-							name: name
-						});
-						console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green);
-						connection.end();
-					}
-				});
-			}).catch(err => {
+	.put((async (req, res) => {
+		//TODO: Fix the error handling and let Validator do most of the work!
+		let hash = await bcrypt.hash(req.body.password, saltRounds)
+			.then(result => {
+				return result;
+			})
+			.catch(err => {
 				console.log("500".bold.red, "PUT /users".bold.white.bgRed, `The password was not able to be encrypted: ${err}`.bold.white.bg);
 				res.status(500).send("Internal server error");
 			});
-		});
+		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
+		caller.mySQLFetch(query, args)
+			.then(data => {
+				res.status(201).json({
+					id: data.insertId,
+					name: req.body.username
+				});
+				console.log("201".yellow, "PUT /users".bold, ": ", "Created".bold.green);
+			})
+			.catch(err => {
+				if (err.errno === 1062) {
+					console.log("409".bold.red, "PUT /users".bold, ": ", "Username was already taken");
+					res.status(409).send("This user already exists");
+				} else {
+					throw err;
+				}
+			});
 	}));
 
 router.route("/:ouid")
