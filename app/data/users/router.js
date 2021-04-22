@@ -66,7 +66,28 @@ router.route("")
 
 router.route("/:ouid")
 	.get((req, res) => {
-		const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
+		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
+		caller.mySQLFetch(query, args)
+			.then(result => res.json({
+				id: result[0].user_id,
+				name: result[0].username,
+				wallet: result[0].wallet,
+				cards: result.map(card => {
+					return {
+						id: card.id,
+						name: card.name,
+						image: card.picture,
+						description: card.description,
+						cost: card.price,
+						views: card.views,
+						likes: card.likes
+					};
+				})
+			}))
+			.catch(err => {
+				if (err) throw err;
+			});
+		/*const ouid = parseInt(req.params.ouid), query = stmts.getUser, connection = mysql.createConnection(db.config);
 		connection.connect((conErr) => {
 			if (conErr) throw conErr;
 			connection.query(query, [ouid], (err, rows) => {
@@ -91,7 +112,7 @@ router.route("/:ouid")
 				console.log("200".yellow, `GET /users/${ouid}`.bold, ": ", "OK".bold.green);
 				connection.end();
 			});
-		});
+		});*/
 	})
 
 //TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
