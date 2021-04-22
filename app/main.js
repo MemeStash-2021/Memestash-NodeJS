@@ -6,7 +6,10 @@ require("colors");
 
 //Express Routers
 const users = require("./data/users/router");
-const cards = require("./data/cards/router");
+const auth = require("./data/auth/router");
+const cards = require("./data/cards/cardRouter");
+const userCards = require("./data/cards/userRouter");
+const chats = require("./data/chat/router");
 
 init();
 
@@ -41,7 +44,10 @@ function init() {
 
 function initRouters() {
 	ws.app.use("/users", users);
+	ws.app.use("/users", auth);
 	ws.app.use("/cards", cards);
+	ws.app.use("/users", userCards);
+	ws.app.use("/users", chats);
 }
 
 

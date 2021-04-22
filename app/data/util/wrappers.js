@@ -14,7 +14,7 @@ exports.userCreated = (data, username) => {
 	};
 };
 
-exports.fullUser = (id, data, empty=false) => {
+exports.userCards = (id, data, empty=false) => {
 	return {
 		userid: id,
 		count: data.length,
@@ -31,5 +31,24 @@ exports.fullUser = (id, data, empty=false) => {
 					likes: card.likes
 				};
 			})
+	};
+};
+
+exports.fullUser = (data)=> {
+	return {
+		id: data[0].user_id,
+		name: data[0].username,
+		wallet: data[0].wallet,
+		cards: data.map(card => {
+			return {
+				id: card.id,
+				name: card.name,
+				image: card.picture,
+				description: card.description,
+				cost: card.price,
+				views: card.views,
+				likes: card.likes
+			};
+		})
 	};
 };

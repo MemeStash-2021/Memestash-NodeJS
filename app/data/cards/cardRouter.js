@@ -4,9 +4,9 @@ const express = require("express");
 // App Constants
 const mySQL = require("../util/mysql.js");
 const stmts = require("./statements.js");
-const router = express.Router();
+const cardRouter = express.Router();
 
-router.get("", (req, res) => {
+cardRouter.get("", (req, res) => {
 	const query = chooseQuery(req), args = constructArgs(req);
 	mySQL.fetch(query, args)
 		.then(data =>{
@@ -42,4 +42,4 @@ router.get("", (req, res) => {
 	}
 });
 
-module.exports = router;
+module.exports = cardRouter;
