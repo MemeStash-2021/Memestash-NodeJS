@@ -6,32 +6,35 @@ const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+
 // App Constants
 const db = require("../../config/database.js");
 const stmts = require("./statements.js");
 const router = express.Router();
+const caller = require("../util/mysql.js");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
 router.route("")
-	.get((req, res) => {
-		const name = req.query.name, connection = mysql.createConnection(db.config),
-			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered;
-		connection.connect((conErr) => {
-			if (conErr) throw conErr;
-			connection.query(query, (name === undefined) ? undefined : "%" + name + "%", (err, rows) => {
-				if (err) throw err;
-				res.json(rows.map(user => {
+	.get(async (req, res) => {
+		const name = req.query.name,
+			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
+			args = (name === undefined) ? undefined : ["%" + name + "%"];
+		caller.mySQLFetch(query, args)
+			.then( data =>{
+				res.json(data.map(user => {
 					delete user.password;
 					delete user.email;
 					delete user.wallet;
 					return user;
 				}));
-				console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
-				connection.end();
+			})
+			.catch(error => {
+				throw error;
 			});
-		});
+		
+		console.log("200".yellow, "GET /users".bold, ": ", "OK".bold.green);
 	})
 	.put(((req, res) => {
 		const connection = mysql.createConnection(db.config), name = req.body.username, email = req.body.email,
