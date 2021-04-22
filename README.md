@@ -76,10 +76,10 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 │   │   └── ws.js
 │   ├── data
 │   │   ├── cards
-│   │   │   ├── router.js
+│   │   │   ├── cardRouter.js
 │   │   │   └── statements.js
 │   │   └── users
-│   │       ├── router.js
+│   │       ├── cardRouter.js
 │   │       └── statements.js
 │   ├── encrypt.js
 │   ├── main.js
@@ -97,8 +97,8 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 ```
 ### `Data` routers
 The routers for Express are contained in their own folder and contain 2 files:
-- `router.js` is responsible for handling all incoming requests
-- `statements.js` contains all SQL statements used for that router.
+- `cardRouter.js` is responsible for handling all incoming requests
+- `statements.js` contains all SQL statements used for that cardRouter.
 
 ## FAQ
 **Q:** The node scripts don't run! <br>
