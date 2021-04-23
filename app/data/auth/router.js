@@ -10,7 +10,6 @@ const stmts = require("./statements.js");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
-const log = require("../util/logger");
 const {LogicError} = require("../../errors/error");
 
 // Data Constants
@@ -24,10 +23,7 @@ router.route("")
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
 		mySQL.fetch(query, args)
-			.then(data => {
-				res.status(201).json(wrapper.userCreated(data, req.body.username));
-				log.log201(req);
-			})
+			.then(data => res.status(201).json(wrapper.userCreated(data, req.body.username)))
 			.catch(err => (err.errno === 1062)
 				? next(new LogicError(409, "This user already exists"))
 				: next(new LogicError(500, "Internal Server Error"))
@@ -41,7 +37,6 @@ router.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't 
 		if (("username" in req.body || "newPassword" in req.body) && "password" in req.body) {
 			switch (user.length) {
 			case 1:
-				log.log200(req);
 				return res.json(user);
 			case 0:
 				next(new LogicError(404, "User Not Found"));break;

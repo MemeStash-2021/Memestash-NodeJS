@@ -9,7 +9,6 @@ const userStmts = require("./../users/statements");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
-const log = require("../util/logger");
 const {LogicError} = require("../../errors/error");
 
 // Data Constants
@@ -21,18 +20,13 @@ router.route("/:ouid/cards")
 		const query = stmts.getUserCards, ouid = parseInt(req.params.ouid), args = [ouid];
 		mySQL.fetch(query, args)
 			.then(result => {
-				if (result.length === 0) {
-					userCheck(ouid).then((userNotExists) => {
-						if (userNotExists) {
-							next(new LogicError(404, "User cannot be found"));
-						} else {
-							res.json(wrapper.userCards(ouid, result, true));
-							log.log200(req);
-						}
-					}).catch(()=>next(new LogicError(500, "Internal Server Error")));
-				} else {
-					res.json(wrapper.userCards(ouid, result));
-				}
+				(result.length === 0)
+					? userCheck(ouid).then(userNotExists => {
+						(userNotExists)
+							? next(new LogicError(404, "User cannot be found"))
+							: res.json(wrapper.userCards(ouid, result, true));
+					})
+					: res.json(wrapper.userCards(ouid, result));
 			})
 			.catch(()=>next(new LogicError(500, "Internal Server Error")));
 
@@ -55,7 +49,6 @@ router.route("/:ouid/cards/:cid")
 			count: mock.cards().length,
 			cards: mock.cards()
 		});
-		log.log201(req);
 	});
 
 module.exports = router;

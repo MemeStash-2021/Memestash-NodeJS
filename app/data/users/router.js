@@ -8,7 +8,6 @@ const stmts = require("./statements.js");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
-const log = require("../util/logger");
 const {LogicError} = require("../../errors/error");
 
 // Data Constants
@@ -20,10 +19,7 @@ router.route("")
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
 		mySQL.fetch(query, args)
-			.then(data => {
-				res.json(data.map(user => wrapper.simpleUser(user)));
-				log.log200(req);
-			})
+			.then(data => res.json(data.map(user => wrapper.simpleUser(user))))
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
 
@@ -31,14 +27,10 @@ router.route("/:ouid")
 	.get((req, res, next) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
 		mySQL.fetch(query, args)
-			.then(result => {
-				if (result.length === 0){
-					next(new LogicError(404, "User not found"));
-				} else {
-					res.json(wrapper.fullUser(result));
-					log.log200(req);
-				}
-			})
+			.then(result => (result.length === 0)
+				? next(new LogicError(404, "User not found"))
+				: res.json(wrapper.fullUser(result))
+			)
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
 
@@ -53,7 +45,6 @@ router.route("/:ouid/wallet")
 			wallet: 80000,
 			cards: mock.cards()
 		});
-		log.log200(req);
 	}));
 
 module.exports = router;

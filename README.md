@@ -34,9 +34,8 @@ All password are encrypted using BCrypt encryption package. if you wish to manua
     npm run encrypt <string>
 ```
 ### Console
-The console will display the following things during it's lifetime:
+The console will display the following things during its lifetime:
 - Configuration information *(Like port configuration, etc...)*
-- Successful requests
 - Unsuccessful requests
 ### API Spec
 #### URL & Parameters & Body Validation
