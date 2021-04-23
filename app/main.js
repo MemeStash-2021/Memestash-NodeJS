@@ -2,39 +2,29 @@
 const ws = require("./config/ws.js");
 const OpenApiValidator = require("express-openapi-validator");
 const cors = require("cors");
+const {errorHandler} = require("./errors/errorHandlers");
 require("colors");
 
 //Express Routers
-const users = require("./data/users/router");
-const auth = require("./data/auth/router");
-const cards = require("./data/cards/cardRouter");
-const userCards = require("./data/cards/userRouter");
-const chats = require("./data/chat/router");
+const users = require("./data/routes/userRouter");
+const auth = require("./data/routes/authRouter");
+const cards = require("./data/routes/cardRouter");
+const userCards = require("./data/routes/userCardsRouter");
+const chats = require("./data/routes/chatRouter");
 
 init();
 
 function init() {
-	/*Set up parsers*/
 	ws.app.use(ws.express.json());
 	ws.app.use(ws.express.urlencoded({extended: false}));
-	/*Set up validator*/
 	ws.app.use(OpenApiValidator.middleware({
 		apiSpec: "./app/openapi.yaml",
 		validateRequests: true,
 		validateApiSpec: true
 	}));
-	/*Set up CORS Handler*/
 	ws.app.use(cors());
-	/*Set up Validator Handler*/
-	ws.app.use((err, req, res, next) => {
-		res.status(err.status || 500).json({
-			message: err.message,
-			errors: err.errors,
-		});
-		console.log(`${err.status}`.red, `${req.method}`.bold, `${req.url} :  `.bold, `${err.message}`.red);
-	});
-	/*Start routers*/
 	initRouters();
+	ws.app.use(errorHandler);
 	console.log("Express is", "configured.".green);
 	/*Start Webserver*/
 	ws.server.listen(ws.port, () => {

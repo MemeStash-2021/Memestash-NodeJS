@@ -34,9 +34,8 @@ All password are encrypted using BCrypt encryption package. if you wish to manua
     npm run encrypt <string>
 ```
 ### Console
-The console will display the following things during it's lifetime:
+The console will display the following things during its lifetime:
 - Configuration information *(Like port configuration, etc...)*
-- Successful requests
 - Unsuccessful requests
 ### API Spec
 #### URL & Parameters & Body Validation
@@ -71,30 +70,27 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 ```
 .
 ├── app -> Contains all the NodeJS application files
-│   ├── config
+│   ├── config -> Contains configuration files for the application
 │   │   ├── database.js
 │   │   └── ws.js
-│   ├── data
-│   │   ├── auth
-│   │   │   ├── router.js
-│   │   │   └── statements.js
-│   │   ├── cards
+│   ├── data -> Data layer of the App
+│   │   ├── routes -> Contains all routes of the App
+│   │   │   ├── authRouter.js
 │   │   │   ├── cardRouter.js
-│   │   │   ├── statements.js
+│   │   │   ├── chatRouter.js
+│   │   │   ├── userCardsRouter.js
 │   │   │   └── userRouter.js
-│   │   ├── chat
-│   │   │   ├── router.js
-│   │   │   └── statements.js
-│   │   ├── users
-│   │   │   ├── router.js
-│   │   │   └── statements.js
-│   │   └── util
+│   │   ├── statements.js -> Contains all statements used by the application
+│   │   └── util -> Additional files that give extra functionality
 │   │       ├── mysql.js -> File that transforms DB Call to One-liner
 │   │       └── wrappers.js -> File that contains custom JSON responses
 │   ├── encrypt.js
-│   ├── main.js
-│   ├── mock.js
-│   └── openapi.yaml
+│   ├── errors -> Contains files for handling errors
+│   │   ├── errorHandlers.js
+│   │   └── error.js
+│   ├── main.js -> Main startup file of the application
+│   ├── mock.js -> File that contains temporary mock data
+│   └── openapi.yaml -> OpenAPI Spec Sheet
 ├── db -> Contains files used to fill & construct the DB
 │   ├── db_fill.sql
 │   └── db_structure.sql
@@ -106,11 +102,9 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 └── README.md
 ```
 ### `Data` routers
-The routers for Express are contained in their own folder and contain 2 files:
-- `<prefix>router.js` is responsible for handling all incoming requests
-- `statements.js` contains all SQL statements used for that cardRouter.
-
-The routers are split by use case. Note that sometimes, 2 or more routers can be present within 1 folder.
+- The statement used for the database are contained in `statement.js`
+- The actual routes are within the `routes` directory.
+- `util` contains utility files that provide additional functionality
 
 ## FAQ
 **Q:** The node scripts don't run! <br>

@@ -4,10 +4,9 @@
 const express = require("express");
 
 // App Constants
-const router = express.Router();
-const log = require("../util/logger");
+const chatRouter = express.Router();
 
-router.route("/:ouid/chats")
+chatRouter.route("/:ouid/chats")
 	.get(((req, res) => {
 		let json = [];
 		for (let i = 0; i < 5; i++) {
@@ -25,10 +24,9 @@ router.route("/:ouid/chats")
 			});
 		}
 		res.json(json);
-		log.log200(req);
 	}));
 
-router.route("/:ouid/chats/:tuid")
+chatRouter.route("/:ouid/chats/:tuid")
 	.get(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid);
 		let json = [];
@@ -41,7 +39,6 @@ router.route("/:ouid/chats/:tuid")
 			});
 		}
 		res.json(json);
-		log.log200(req);
 	}))
 // TODO: Don't forget to implement the actual query parameters
 	.patch((req, res) => {
@@ -66,7 +63,6 @@ router.route("/:ouid/chats/:tuid")
 			},
 			messages: json
 		});
-		log.log200(req);
 	})
 	.put(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
@@ -86,7 +82,6 @@ router.route("/:ouid/chats/:tuid")
 				senderId: ouid
 			}
 		});
-		log.log200(req);
 	}));
 
-module.exports = router;
+module.exports = chatRouter;

@@ -3,27 +3,19 @@ const express = require("express");
 
 // App Constants
 const mySQL = require("../util/mysql.js");
-const stmts = require("./statements.js");
+const stmts = require("../statements");
 const cardRouter = express.Router();
-const log = require("../util/logger");
+const {LogicError} = require("../../errors/error");
 
-cardRouter.get("", (req, res) => {
+cardRouter.get("", (req, res, next) => {
 	const query = chooseQuery(req), args = constructArgs(req);
 	mySQL.fetch(query, args)
 		.then(data =>{
-			if(data.length === 0) {
-				const msg = (query === stmts.getCardsByName) ? "Name not found" : "Id not found";
-				log.log404(req, msg);
-				res.status(404).json({message: msg});
-			}
-			else{
-				log.log200(req);
-				res.json(data);
-			}
+			(data.length === 0)
+				? next(new LogicError(404, (query === stmts.getCardsByName) ? "Name not found" : "Id not found"))
+				: res.json(data);
 		})
-		.catch(err => {
-			throw err;
-		});
+		.catch(() => next(new LogicError(500, "Internal Server Error")));
 	
 	function chooseQuery(params){
 		if(params.query.id !== undefined){
