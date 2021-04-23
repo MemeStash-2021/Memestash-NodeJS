@@ -15,20 +15,15 @@ const chats = require("./data/chat/router");
 init();
 
 function init() {
-	/*Set up parsers*/
 	ws.app.use(ws.express.json());
 	ws.app.use(ws.express.urlencoded({extended: false}));
-	/*Set up validator*/
 	ws.app.use(OpenApiValidator.middleware({
 		apiSpec: "./app/openapi.yaml",
 		validateRequests: true,
 		validateApiSpec: true
 	}));
-	/*Set up CORS Handler*/
 	ws.app.use(cors());
-	/*Start routers*/
 	initRouters();
-	/*Set up error Handlers*/
 	ws.app.use(errorHandler);
 	console.log("Express is", "configured.".green);
 	/*Start Webserver*/
