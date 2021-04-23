@@ -5,6 +5,7 @@ const express = require("express");
 const mySQL = require("../util/mysql.js");
 const stmts = require("./statements.js");
 const cardRouter = express.Router();
+const log = require("../util/logger");
 
 cardRouter.get("", (req, res) => {
 	const query = chooseQuery(req), args = constructArgs(req);
@@ -12,11 +13,11 @@ cardRouter.get("", (req, res) => {
 		.then(data =>{
 			if(data.length === 0) {
 				const msg = (query === stmts.getCardsByName) ? "Name not found" : "Id not found";
-				console.log("404".red, "GET /cards".bold, ": ", msg);
+				log.log404(req, msg);
 				res.status(404).json({message: msg});
 			}
 			else{
-				console.log("200".yellow, "GET /cards".bold, ": ", "OK".bold.green);
+				log.log200(req);
 				res.json(data);
 			}
 		})
