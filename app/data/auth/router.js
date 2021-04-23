@@ -11,36 +11,31 @@ const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
 const log = require("../util/logger");
+const {HTTPError} = require("../../errors/error");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
 router.route("")
-	.put((async (req, res) => {
+	.put((async (req, res, next) => {
 		//TODO: Fix the error handling and let Validator do most of the work!
-		let hash = await bcrypt.hash(req.body.password, saltRounds).then(result => {return result;})
-			.catch(err => {
-				res.status(500).send("Internal server error");
-				log.log500(req);
-			});
+		let hash = await bcrypt.hash(req.body.password, saltRounds)
+			.then(result => {return result;})
+			.catch(() => next(new HTTPError(500, "Internal Server Error")));
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
 		mySQL.fetch(query, args)
 			.then(data => {
 				res.status(201).json(wrapper.userCreated(data, req.body.username));
 				log.log201(req);
 			})
-			.catch(err => {
-				if (err.errno === 1062) {
-					res.status(409).send("This user already exists");
-					log.log409(req, "Username was already taken");
-				} else {
-					throw err;
-				}
-			});
+			.catch(err => (err.errno === 1062)
+				? next(new HTTPError(409, "This user already exists"))
+				: next(new HTTPError(500, "Internal Server Error"))
+			);
 	}));
 
 router.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
-	.patch((req, res) => {
+	.patch((req, res, next) => {
 		const ouid = parseInt(req.params.ouid);
 		const user = mock.users.filter(user => user.userId === ouid);
 		if (("username" in req.body || "newPassword" in req.body) && "password" in req.body) {
@@ -49,15 +44,12 @@ router.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't 
 				log.log200(req);
 				return res.json(user);
 			case 0:
-				log.log404(req, "User was not found");
-				return res.status(404).send(`The user with ID ${ouid} does not exist.`);
+				next(new HTTPError(404, "User Not Found"));break;
 			default:
-				log.log500(req);
-				return res.status(500).send("Internal Server Error");
+				next(new HTTPError(500, "Internal Server Error")); break;
 			}
 		} else {
-			log.log400(req);
-			return res.status(400).send("The request body is incorrect");
+			next(new HTTPError(400, "Malformed body"));
 		}
 	});
 
