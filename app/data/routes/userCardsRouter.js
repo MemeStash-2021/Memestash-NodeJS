@@ -4,8 +4,7 @@
 const express = require("express");
 
 // App Constants
-const stmts = require("./statements");
-const userStmts = require("./../users/statements");
+const stmts = require("../statements");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
@@ -32,7 +31,7 @@ router.route("/:ouid/cards")
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
-				mySQL.fetch(userStmts.getUser, [userId])
+				mySQL.fetch(stmts.getUser, [userId])
 					.then(data => resolve(data.length === 0))
 					.catch(err => reject(err));
 			}));

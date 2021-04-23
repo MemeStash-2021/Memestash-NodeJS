@@ -6,11 +6,11 @@ const {errorHandler} = require("./errors/errorHandlers");
 require("colors");
 
 //Express Routers
-const users = require("./data/users/router");
-const auth = require("./data/auth/router");
-const cards = require("./data/cards/cardRouter");
-const userCards = require("./data/cards/userRouter");
-const chats = require("./data/chat/router");
+const users = require("./data/routes/userRouter");
+const auth = require("./data/routes/authRouter");
+const cards = require("./data/routes/cardRouter");
+const userCards = require("./data/routes/userCardsRouter");
+const chats = require("./data/routes/chatRouter");
 
 init();
 

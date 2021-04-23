@@ -6,8 +6,8 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 // App Constants
-const stmts = require("./statements.js");
-const router = express.Router();
+const stmts = require("../statements");
+const authRouter = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
 const {LogicError} = require("../../errors/error");
@@ -15,7 +15,7 @@ const {LogicError} = require("../../errors/error");
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
-router.route("")
+authRouter.route("")
 	.put((async (req, res, next) => {
 		//TODO: Fix the error handling and let Validator do most of the work!
 		let hash = await bcrypt.hash(req.body.password, saltRounds)
@@ -30,7 +30,7 @@ router.route("")
 			);
 	}));
 
-router.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
+authRouter.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't forget to implement this in DB Callback
 	.patch((req, res, next) => {
 		const ouid = parseInt(req.params.ouid);
 		const user = mock.users.filter(user => user.userId === ouid);
@@ -48,4 +48,4 @@ router.route("/:ouid")//TODO: Mock doesn't have any authorization checks. Don't 
 		}
 	});
 
-module.exports = router;
+module.exports = authRouter;

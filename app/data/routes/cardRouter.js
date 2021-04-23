@@ -3,7 +3,7 @@ const express = require("express");
 
 // App Constants
 const mySQL = require("../util/mysql.js");
-const stmts = require("./statements.js");
+const stmts = require("../statements");
 const cardRouter = express.Router();
 const {LogicError} = require("../../errors/error");
 

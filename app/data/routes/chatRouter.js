@@ -4,9 +4,9 @@
 const express = require("express");
 
 // App Constants
-const router = express.Router();
+const chatRouter = express.Router();
 
-router.route("/:ouid/chats")
+chatRouter.route("/:ouid/chats")
 	.get(((req, res) => {
 		let json = [];
 		for (let i = 0; i < 5; i++) {
@@ -26,7 +26,7 @@ router.route("/:ouid/chats")
 		res.json(json);
 	}));
 
-router.route("/:ouid/chats/:tuid")
+chatRouter.route("/:ouid/chats/:tuid")
 	.get(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid);
 		let json = [];
@@ -84,4 +84,4 @@ router.route("/:ouid/chats/:tuid")
 		});
 	}));
 
-module.exports = router;
+module.exports = chatRouter;

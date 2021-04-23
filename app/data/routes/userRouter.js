@@ -4,8 +4,8 @@
 const express = require("express");
 
 // App Constants
-const stmts = require("./statements.js");
-const router = express.Router();
+const stmts = require("../statements");
+const userRouter = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
 const {LogicError} = require("../../errors/error");
@@ -13,7 +13,7 @@ const {LogicError} = require("../../errors/error");
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
-router.route("")
+userRouter.route("")
 	.get((req, res, next) => {
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
@@ -23,7 +23,7 @@ router.route("")
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
 
-router.route("/:ouid")
+userRouter.route("/:ouid")
 	.get((req, res, next) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
 		mySQL.fetch(query, args)
@@ -36,7 +36,7 @@ router.route("/:ouid")
 
 
 //TODO: In real callback, implement logic & parameter checking
-router.route("/:ouid/wallet")
+userRouter.route("/:ouid/wallet")
 	.put(((req, res) => {
 		const ouid = parseInt(req.params.ouid);
 		res.json({
@@ -47,4 +47,4 @@ router.route("/:ouid/wallet")
 		});
 	}));
 
-module.exports = router;
+module.exports = userRouter;
