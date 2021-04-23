@@ -9,12 +9,13 @@ const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
 const log = require("../util/logger");
+const {HTTPError} = require("../../errors/error");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
 
 router.route("")
-	.get((req, res) => {
+	.get((req, res, next) => {
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
@@ -23,27 +24,22 @@ router.route("")
 				res.json(data.map(user => wrapper.simpleUser(user)));
 				log.log200(req);
 			})
-			.catch(error => {
-				throw error;
-			});
+			.catch(() => next(new HTTPError(500, "Internal Server Error")));
 	});
 
 router.route("/:ouid")
-	.get((req, res) => {
+	.get((req, res, next) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
 		mySQL.fetch(query, args)
 			.then(result => {
 				if (result.length === 0){
-					res.status(404).json({message: "Unable to find user"});
-					log.log404(req, "Unable to find user.");
+					next(new HTTPError(404, "User not found"));
 				} else {
 					res.json(wrapper.fullUser(result));
 					log.log200(req);
 				}
 			})
-			.catch(err => {
-				if (err) throw err;
-			});
+			.catch(() => next(new HTTPError(500, "Internal Server Error")));
 	});
 
 
