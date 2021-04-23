@@ -9,6 +9,7 @@ const userStmts = require("./../users/statements");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
+const log = require("../util/logger");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
@@ -20,9 +21,14 @@ router.route("/:ouid/cards")
 		mySQL.fetch(query, args)
 			.then(result => {
 				if (result.length === 0) {
-					userCheck(ouid).then((userNotExists) => {(userNotExists)
-						? res.status(404).json({message: "The user could not be found"})
-						: res.json(wrapper.userCards(ouid, result, true));
+					userCheck(ouid).then((userNotExists) => {
+						if (userNotExists) {
+							res.status(404).json({message: "The user could not be found"});
+							log.log404(req, "The user could not be found");
+						} else {
+							res.json(wrapper.userCards(ouid, result, true));
+							log.log200(req);
+						}
 					}).catch((err) => {
 						throw err;
 					});
@@ -53,6 +59,7 @@ router.route("/:ouid/cards/:cid")
 			count: mock.cards().length,
 			cards: mock.cards()
 		});
+		log.log201(req);
 	});
 
 module.exports = router;

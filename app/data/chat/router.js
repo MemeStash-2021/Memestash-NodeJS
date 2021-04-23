@@ -4,13 +4,8 @@
 const express = require("express");
 
 // App Constants
-const stmts = require("./statements.js");
 const router = express.Router();
-const mySQL = require("../util/mysql.js");
-const wrapper = require("../util/wrappers.js");
-
-// Data Constants
-const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
+const log = require("../util/logger");
 
 router.route("/:ouid/chats")
 	.get(((req, res) => {
@@ -30,6 +25,7 @@ router.route("/:ouid/chats")
 			});
 		}
 		res.json(json);
+		log.log200(req);
 	}));
 
 router.route("/:ouid/chats/:tuid")
@@ -45,6 +41,7 @@ router.route("/:ouid/chats/:tuid")
 			});
 		}
 		res.json(json);
+		log.log200(req);
 	}))
 // TODO: Don't forget to implement the actual query parameters
 	.patch((req, res) => {
@@ -69,6 +66,7 @@ router.route("/:ouid/chats/:tuid")
 			},
 			messages: json
 		});
+		log.log200(req);
 	})
 	.put(((req, res) => {
 		const ouid = parseInt(req.params.ouid), tuid = parseInt(req.params.tuid), message = req.body.message;
@@ -88,6 +86,7 @@ router.route("/:ouid/chats/:tuid")
 				senderId: ouid
 			}
 		});
+		log.log200(req);
 	}));
 
 module.exports = router;
