@@ -1,6 +1,6 @@
 "use strict";
 
-class HTTPError extends Error {
+class LogicError extends Error {
 	constructor(status, message) {
 		super();
 		this.status = status;
@@ -8,5 +8,5 @@ class HTTPError extends Error {
 	}
 }
 module.exports = {
-	HTTPError
+	LogicError
 };

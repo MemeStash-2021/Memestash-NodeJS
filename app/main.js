@@ -2,7 +2,7 @@
 const ws = require("./config/ws.js");
 const OpenApiValidator = require("express-openapi-validator");
 const cors = require("cors");
-const {openAPIErrorHandler, defaultErrorHandler} = require("./errors/errorHandlers");
+const {errorHandler} = require("./errors/errorHandlers");
 require("colors");
 
 //Express Routers
@@ -29,8 +29,7 @@ function init() {
 	/*Start routers*/
 	initRouters();
 	/*Set up error Handlers*/
-	ws.app.use(openAPIErrorHandler);
-	ws.app.use(defaultErrorHandler);
+	ws.app.use(errorHandler);
 	console.log("Express is", "configured.".green);
 	/*Start Webserver*/
 	ws.server.listen(ws.port, () => {

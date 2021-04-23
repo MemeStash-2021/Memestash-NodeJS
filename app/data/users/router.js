@@ -9,7 +9,7 @@ const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
 const log = require("../util/logger");
-const {HTTPError} = require("../../errors/error");
+const {LogicError} = require("../../errors/error");
 
 // Data Constants
 const mock = require("../../mock.js"); // TODO: Remove this once all callbacks use database callback.
@@ -24,7 +24,7 @@ router.route("")
 				res.json(data.map(user => wrapper.simpleUser(user)));
 				log.log200(req);
 			})
-			.catch(() => next(new HTTPError(500, "Internal Server Error")));
+			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
 
 router.route("/:ouid")
@@ -33,13 +33,13 @@ router.route("/:ouid")
 		mySQL.fetch(query, args)
 			.then(result => {
 				if (result.length === 0){
-					next(new HTTPError(404, "User not found"));
+					next(new LogicError(404, "User not found"));
 				} else {
 					res.json(wrapper.fullUser(result));
 					log.log200(req);
 				}
 			})
-			.catch(() => next(new HTTPError(500, "Internal Server Error")));
+			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
 
 
