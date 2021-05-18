@@ -18,7 +18,8 @@
     "express": "^4.17.1",
     "express-openapi-validator": "^4.12.4",
     "http": "0.0.1-security",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "swagger-autogen": "^2.8.2"
   },
   "devDependencies": {
     "eslint": "^7.22.0"
