@@ -22,7 +22,7 @@ authRouter.route("")
 			.then(result => {return result;})
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 		const query = stmts.addUser, args = [req.body.username, req.body.email, hash];
-		mySQL.fetch(query, args)
+		mySQL.execute(query, args)
 			.then(data => res.status(201).json(wrapper.userCreated(data, req.body.username)))
 			.catch(err => (err.errno === 1062)
 				? next(new LogicError(409, "This user already exists"))

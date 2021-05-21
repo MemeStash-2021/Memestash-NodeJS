@@ -197,6 +197,8 @@ paths:
                 $ref: "#/components/schemas/Collection"
         '404':
           $ref: "#/components/responses/404"
+        '403':
+          $ref: "#/components/responses/403"
         '500':
           $ref: "#/components/responses/500"
   /users/{ouid}/chats:
@@ -633,6 +635,8 @@ components:
       description: The request body / query is not correct.
     401:
       description: Authorization failed.
+    403:
+      description: Forbidden.
     308exist:
       description: No message queue exists. Use PUT /users/{ouid}/chats/{tuid} instead to create a message queue.
     308new:

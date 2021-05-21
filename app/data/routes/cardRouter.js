@@ -9,7 +9,7 @@ const {LogicError} = require("../../errors/error");
 
 cardRouter.get("", (req, res, next) => {
 	const query = chooseQuery(req), args = constructArgs(req);
-	mySQL.fetch(query, args)
+	mySQL.execute(query, args)
 		.then(data =>{
 			(data.length === 0)
 				? next(new LogicError(404, (query === stmts.getCardsByName) ? "Name not found" : "Id not found"))

@@ -18,7 +18,7 @@ userRouter.route("")
 		const name = req.query.name,
 			query = (name === undefined) ? stmts.getUsers : stmts.getUsersFiltered,
 			args = (name === undefined) ? undefined : ["%" + name + "%"];
-		mySQL.fetch(query, args)
+		mySQL.execute(query, args)
 			.then(data => res.json(data.map(user => wrapper.simpleUser(user))))
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	});
@@ -26,7 +26,7 @@ userRouter.route("")
 userRouter.route("/:ouid")
 	.get((req, res, next) => {
 		const query = stmts.getUser, args = [parseInt(req.params.ouid)];
-		mySQL.fetch(query, args)
+		mySQL.execute(query, args)
 			.then(result => (result.length === 0)
 				? next(new LogicError(404, "User not found"))
 				: res.json(wrapper.fullUser(result))
