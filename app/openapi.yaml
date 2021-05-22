@@ -17,6 +17,8 @@ tags:
     description: All endpoints interacting mainly with Trades
   - name: Wallet
     description: All endpoints interacting mainly with Wallets
+  - name: Push
+    description: All enpoints needed for enabling & configuring push notifications
 paths:
   /users:
     get:
@@ -444,6 +446,21 @@ paths:
           $ref: "#/components/responses/400"
         '500':
           $ref: "#/components/responses/500"
+  /push/public:
+    get:
+      summary: Get the public key for enabling push notifications
+      description: Gets the public key for enabling push notifications on the front-end.
+      tags:
+        - Push
+      responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/PushKey"
+          '500':
+            $ref: "#/components/responses/500"
 components:
   parameters:
     NameQuery:
@@ -626,6 +643,12 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Card"
+    PushKey:
+      type: object
+      properties:
+        publicKey:
+          type: string
+          example: "PubLicPusHN0tif1caT1onK3y"
   responses:
     404:
       description: This object with the given ID could not be found

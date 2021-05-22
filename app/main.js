@@ -13,6 +13,7 @@ const auth = require("./data/routes/authRouter");
 const cards = require("./data/routes/cardRouter");
 const userCards = require("./data/routes/userCardsRouter");
 const chats = require("./data/routes/chatRouter");
+const push = require("./data/routes/pushRouter");
 
 init();
 
@@ -43,6 +44,7 @@ function initRouters() {
 	ws.app.use("/api/cards", cards);
 	ws.app.use("/api/users", userCards);
 	ws.app.use("/api/users", chats);
+	ws.app.use("/api/push", push);
 }
 
 
