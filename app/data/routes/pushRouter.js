@@ -27,7 +27,7 @@ router.route("/:ouid")
 			subBlock.keys.auth,
 			ouid
 		])
-			.then(() => res.sendStatus(200))
+			.then(() => res.status(200).end())
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
 	}));
 module.exports = router;
