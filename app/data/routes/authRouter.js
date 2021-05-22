@@ -17,7 +17,6 @@ const mock = require("../../mock.js"); // TODO: Remove this once all callbacks u
 
 authRouter.route("")
 	.put((async (req, res, next) => {
-		//TODO: Fix the error handling and let Validator do most of the work!
 		let hash = await bcrypt.hash(req.body.password, saltRounds)
 			.then(result => {return result;})
 			.catch(() => next(new LogicError(500, "Internal Server Error")));
