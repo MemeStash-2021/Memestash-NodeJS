@@ -17,6 +17,8 @@ const chats = require("./data/routes/chatRouter");
 init();
 
 function init() {
+	ws.app.use(cors());
+	ws.app.options("*", cors());
 	ws.app.use(ws.express.json());
 	ws.app.use(ws.express.urlencoded({extended: false}));
 	ws.app.use(OpenApiValidator.middleware({
@@ -24,7 +26,6 @@ function init() {
 		validateRequests: true,
 		validateApiSpec: true
 	}));
-	ws.app.use(cors());
 	const jsSpec = YAMLConverter.load("./app/openapi.yaml");
 	ws.app.use("/spec", swaggerUi.serve, swaggerUi.setup(jsSpec, ws.swaggerOptions));
 	initRouters();

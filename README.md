@@ -45,6 +45,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 
 All error returns have been standardized and are using Express's error handling in order to return the right data.
 ### API Spec
+The base url is `<host address>:<port>/api`
 #### Users
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
