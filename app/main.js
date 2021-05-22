@@ -3,6 +3,8 @@ const ws = require("./config/ws.js");
 const OpenApiValidator = require("express-openapi-validator");
 const cors = require("cors");
 const {errorHandler} = require("./errors/errorHandlers");
+const swaggerUi = require("swagger-ui-express");
+const YAMLConverter = require("yamljs");
 require("colors");
 
 //Express Routers
@@ -22,6 +24,8 @@ function init() {
 		validateRequests: true,
 		validateApiSpec: true
 	}));
+	const jsSpec = YAMLConverter.load("./app/openapi.yaml");
+	ws.app.use("/", swaggerUi.serve, swaggerUi.setup(jsSpec, ws.swaggerOptions));
 	ws.app.use(cors());
 	initRouters();
 	ws.app.use(errorHandler);

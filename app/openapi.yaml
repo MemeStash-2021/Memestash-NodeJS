@@ -3,7 +3,7 @@ info:
   title: 'Memestash NodeJS Back-End'
   version: 0.1.0
   description: 'Back-end application based on the NodeJS Framework, to be used with Memestash web and/or native app'
-  contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'https://git.ti.howest.be/TI/2020-2021/s4/web-and-mobile-technology/students/bo-robbrecht/memestash/laravel' }
+  contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'borobbrecht.be' }
 servers:
   - { url: 'http://localhost:888/api', description: 'Local url for testing' }
 tags:

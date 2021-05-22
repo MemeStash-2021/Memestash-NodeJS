@@ -6,5 +6,6 @@ module.exports = {
 	app : app,
 	server : http.createServer(app),
 	express : express,
-	port: 8888
+	port: 8888,
+	swaggerOptions : {explorer: true}
 };

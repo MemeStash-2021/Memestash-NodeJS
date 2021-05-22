@@ -28,6 +28,8 @@ This repo comes included with a `docker-compose.yaml` file. With this, you can e
 That's it! The database should be configured and all the needed users and their permissions should be made. You can run the server by typing `npm run server` in a CLI *(**Note:** Make sure you're in the cloned directory)*
 
 ## Features
+### Documentation
+You can explore the API with Swagger documentation by going to the root of the host, e.g. [`localhost:8888`](http://localhost:8888/)
 ### Encryption
 All password are encrypted using BCrypt encryption package. if you wish to manually encrypt a password, you can do this by using the following command:
 ```powershell

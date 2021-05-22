@@ -19,7 +19,9 @@
     "express-openapi-validator": "^4.12.4",
     "http": "0.0.1-security",
     "mysql": "^2.18.1",
-    "swagger-autogen": "^2.8.2"
+    "swagger-autogen": "^2.8.2",
+    "swagger-ui-express": "^4.1.6",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "eslint": "^7.22.0"
