@@ -29,24 +29,27 @@ That's it! The database should be configured and all the needed users and their 
 
 ## Features
 ### Documentation
-You can explore the API with Swagger documentation by going to the root of the host, e.g. [`localhost:8888`](http://localhost:8888/)
+You can explore the API with Swagger documentation by entering `<host address>/spec`, *e.g. [`localhost:8888/spec`](http://localhost:8888/spec)*
 ### Encryption
 All password are encrypted using BCrypt encryption package. if you wish to manually encrypt a password, you can do this by using the following command:
 ```powershell
     npm run encrypt <string>
 ```
+These hashes will then be export to a text file in the `export` directory.
 ### Console
 The console will display the following things during its lifetime:
 - Configuration information *(Like port configuration, etc...)*
 - Unsuccessful requests
-### API Spec
-#### URL & Parameters & Body Validation
+### Validation & Error Handling
 URL, Parameter & Body validation is done with [Express OpenAPI Validator](https://www.npmjs.com/package/express-openapi-validator), which uses the OpenAPI spec sheet to check requests.
+
+All error returns have been standardized and are using Express's error handling in order to return the right data.
+### API Spec
 #### Users
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
 |GET|`/users`|Retrieves a list of all users and info about them. Can be filtered with query parameters.| Implemented |
-|GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|Mock|
+|GET|`/users/{ouid}`|This endpoint gets all the information of a user to be able to construct the homepage. This includes things like cards, name, wallet, etc...|Implemented|
 |PUT|`/users`|This endpoint will add a new user account to the application.|Implemented|
 |PATCH|`/users/{ouid}`|This endpoint is used in order to change account information of the user (Such as the account’s email).|Mock|
 |POST|`/users/login`|This endpoint is responsible for authenticating a user.|N/A|
@@ -54,8 +57,8 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
 |GET|`/cards`|Gets all the cards registered in the system. Can be filtered using query parameters.|Implemented|
-|GET|`/users/{ouid}/cards`|Gets the collection of cards of a user, identified by his id.|Mock|
-|PUT|`/users/{ouid}/cards/{cid}`|This endpoint is responsible for adding a card to the user’s collection. The price needs to be supplied in order to subtract it from the user’s wallet.|Mock|
+|GET|`/users/{ouid}/cards`|Gets the collection of cards of a user, identified by his id.|Implemented|
+|PUT|`/users/{ouid}/cards/{cid}`|This endpoint is responsible for adding a card to the user’s collection. The price needs to be supplied in order to subtract it from the user’s wallet.|Implemented|
 #### Chats
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
@@ -94,6 +97,7 @@ URL, Parameter & Body validation is done with [Express OpenAPI Validator](https:
 │   ├── mock.js -> File that contains temporary mock data
 │   └── openapi.yaml -> OpenAPI Spec Sheet
 ├── db -> Contains files used to fill & construct the DB
+├── export -> Contains the text file with password hashes
 │   ├── db_fill.sql
 │   └── db_structure.sql
 ├── docker-compose.yaml -> File used in order to construct the database.

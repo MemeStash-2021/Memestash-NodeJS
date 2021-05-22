@@ -5,7 +5,7 @@ info:
   description: 'Back-end application based on the NodeJS Framework, to be used with Memestash web and/or native app'
   contact: { name: 'Bo Robbrecht', email: bo.robbrecht@student.howest.be, url: 'borobbrecht.be' }
 servers:
-  - { url: 'http://localhost:888/api', description: 'Local url for testing' }
+  - { url: 'http://localhost:8888/api', description: 'Local url for testing' }
 tags:
   - name: Users
     description: All endpoints interacting mainly with users

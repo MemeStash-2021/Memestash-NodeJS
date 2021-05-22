@@ -24,9 +24,9 @@ function init() {
 		validateRequests: true,
 		validateApiSpec: true
 	}));
-	const jsSpec = YAMLConverter.load("./app/openapi.yaml");
-	ws.app.use("/", swaggerUi.serve, swaggerUi.setup(jsSpec, ws.swaggerOptions));
 	ws.app.use(cors());
+	const jsSpec = YAMLConverter.load("./app/openapi.yaml");
+	ws.app.use("/spec", swaggerUi.serve, swaggerUi.setup(jsSpec, ws.swaggerOptions));
 	initRouters();
 	ws.app.use(errorHandler);
 	console.log("Express is", "configured.".green);
@@ -37,11 +37,11 @@ function init() {
 }
 
 function initRouters() {
-	ws.app.use("/users", users);
-	ws.app.use("/users", auth);
-	ws.app.use("/cards", cards);
-	ws.app.use("/users", userCards);
-	ws.app.use("/users", chats);
+	ws.app.use("/api/users", users);
+	ws.app.use("/api/users", auth);
+	ws.app.use("/api/cards", cards);
+	ws.app.use("/api/users", userCards);
+	ws.app.use("/api/users", chats);
 }
 
 
