@@ -461,7 +461,7 @@ paths:
                   $ref: "#/components/schemas/PushKey"
           '500':
             $ref: "#/components/responses/500"
-  /user/{ouid}/push:
+  /push/{ouid}:
     post:
       summary: Register for push events
       description: Endpoint used in order to enable push events for the client.
