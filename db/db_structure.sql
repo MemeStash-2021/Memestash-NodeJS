@@ -31,7 +31,10 @@ create table users
     username varchar(60) unique  not null,
     email    varchar(255) unique not null,
     password text                not null,
-    wallet   int                 not null
+    wallet   int                 not null,
+    endpoint tinytext            null,
+    p256dh   tinytext            null,
+    auth     tinytext            null
 );
 
 create table collections
