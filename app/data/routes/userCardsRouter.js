@@ -8,6 +8,7 @@ const stmts = require("../statements");
 const router = express.Router();
 const mySQL = require("../util/mysql.js");
 const wrapper = require("../util/wrappers.js");
+const webPush = require("web-push");
 const {LogicError} = require("../../errors/error");
 
 
@@ -24,7 +25,7 @@ router.route("/:ouid/cards")
 					})
 					: res.json(wrapper.userCards(ouid, result));
 			})
-			.catch(()=>next(new LogicError(500, "Internal Server Error")));
+			.catch(() => next(new LogicError(500, "Internal Server Error")));
 
 		function userCheck(userId) {
 			return new Promise(((resolve, reject) => {
@@ -36,26 +37,40 @@ router.route("/:ouid/cards")
 	})
 ;
 
-//TODO: No checks implemented. Do this when creating the DB Callback
+
 router.route("/:ouid/cards/:cid")
 	.put(async (req, res, next) => {
 		const ouid = parseInt(req.params.ouid), cid = parseInt(req.params.cid);
-		const user = await GetUser(ouid), card = await GetCard(cid);
-		if (card.price > user.wallet){
-			return next(new LogicError(403, "The card's proce is highter that the amount of coins the user has."));
+		const user = await getUser(ouid), card = await getCard(cid);
+		const subscription = {
+			endpoint: user.endpoint,
+			keys: {
+				auth: user.auth,
+				p256dh: user.p256dh
+			}
+		};
+		if (card.price > user.wallet) {
+			return next(new LogicError(403, "The card's price is higher that the amount of coins the user has."));
 		}
 		mySQL.execute(stmts.updateWallet, [(user.wallet - card.price), ouid])
-			.catch(()=>new LogicError(500, "Internal Server Error"));
+			.catch(() => new LogicError(500, "Internal Server Error"));
 		mySQL.execute(stmts.insertCard, [ouid, cid])
-			.catch(()=>new LogicError(500, "Internal Server Error"));
+			.catch(() => new LogicError(500, "Internal Server Error"));
 		mySQL.execute(stmts.getUserCards, [ouid])
-			.then(result =>{
+			.then(result => {
 				(result.length === 0)
 					? next(new LogicError(404, "User cannot be found"))
 					: res.json(wrapper.userCards(ouid, result));
 			});
+		const pushData = {
+			msg: "New Memestash card!",
+			user: await getUser(ouid),
+			card: await getCard(cid)
+		};
+		webPush.sendNotification(subscription, JSON.stringify(pushData))
+			.catch(err => console.log(`${"WebPush Error".white.bgRed}: ${err}`));
 
-		function GetUser(userid){
+		function getUser(userid) {
 			return mySQL.execute(stmts.getSimpleUser, [userid])
 				.then(result => {
 					let data;
@@ -64,10 +79,10 @@ router.route("/:ouid/cards/:cid")
 						: data = result[0];
 					return data;
 				})
-				.catch(()=>next(new LogicError(500, "Internal Server Error")));
+				.catch(() => next(new LogicError(500, "Internal Server Error")));
 		}
 
-		function GetCard(cardId){
+		function getCard(cardId) {
 			return mySQL.execute(stmts.getCardById, [cardId])
 				.then(result => {
 					let data;
@@ -76,7 +91,7 @@ router.route("/:ouid/cards/:cid")
 						: data = result[0];
 					return data;
 				})
-				.catch(()=>next(new LogicError(500, "Internal Server Error")));
+				.catch(() => next(new LogicError(500, "Internal Server Error")));
 		}
 	});
 

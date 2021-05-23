@@ -13,7 +13,7 @@ const {LogicError} = require("../../errors/error");
 router.route("/public")
 	.get((req, res) => {
 		res.json({
-			"publicKey": ws.push.publicKey
+			"publicKey": ws.keys.public
 		});
 	});
 
