@@ -21,6 +21,7 @@
     "mysql": "^2.18.1",
     "swagger-autogen": "^2.8.2",
     "swagger-ui-express": "^4.1.6",
+    "web-push": "^3.4.4",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
