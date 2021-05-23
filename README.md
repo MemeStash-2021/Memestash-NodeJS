@@ -23,7 +23,8 @@ This repo comes included with a `docker-compose.yaml` file. With this, you can e
     - **Port**: 3306
     - **Username**: root
     - **Password**: Friday13th!
-5.  Run the `db-structure.sql` and `db-filler.sql`.
+5. Run the `db-structure.sql` and `db-filler.sql`.
+6. Run `npm install` 
 
 That's it! The database should be configured and all the needed users and their permissions should be made. You can run the server by typing `npm run server` in a CLI *(**Note:** Make sure you're in the cloned directory)*
 
