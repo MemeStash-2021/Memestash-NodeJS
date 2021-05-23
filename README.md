@@ -44,6 +44,11 @@ The console will display the following things during its lifetime:
 URL, Parameter & Body validation is done with [Express OpenAPI Validator](https://www.npmjs.com/package/express-openapi-validator), which uses the OpenAPI spec sheet to check requests.
 
 All error returns have been standardized and are using Express's error handling in order to return the right data.
+### Push Notifications
+Users can register for receiving push notifications with the server's public key ( Received from `GET /push/public`) 
+and the subscription block by sending it to `POST /push/{ouid}` endpoint.
+
+Everytime a user buys a card, they'll get a notification from the sever 
 ### API Spec
 The base url is `<host address>:<port>/api`
 #### Users
@@ -71,7 +76,11 @@ The base url is `<host address>:<port>/api`
 |HTTP Verb|Endpoint|Description|Stage?|
 |---|---|---|---|
 |PUT|`/users/{ouid}/wallet`|Adds a new amount of coins to the wallet.|Mock|
-
+#### Push Messages
+|HTTP Verb|Endpoint|Description|Stage?|
+|---|---|---|---|
+|GET|`/push/public`|Get's the public key for push messages|Implemented|
+|POST|`/push/{ouid}`|Registers the user for push notifications|Implemented|
 ## Directory Structure
 ```
 .
