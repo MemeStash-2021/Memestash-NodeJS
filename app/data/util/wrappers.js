@@ -4,6 +4,9 @@ exports.simpleUser = (data) => {
 	delete data.password;
 	delete data.email;
 	delete data.wallet;
+	delete data.endpoint;
+	delete data.p256dh;
+	delete data.auth;
 	return data;
 };
 
