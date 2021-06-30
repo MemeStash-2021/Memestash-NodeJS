@@ -5,13 +5,6 @@
 Welcome to the MemeStash NodeJS Back-End. This application can be used in combination with one of the 2 MemeStash clients
 in order to provide them with data.
 
-## Video
-Here you can watch the video about the project:
-
-[![Memestash Presentation Video](http://img.youtube.com/vi/y0Q6Cn6_y0s/0.jpg)](http://www.youtube.com/watch?v=y0Q6Cn6_y0s "Memestash Presentation Video")
-
-*If the embedded video player doesn't work, you can still visit the video with this [link](https://youtu.be/y0Q6Cn6_y0s)*
-
 ## Setup
 This repo comes included with a `docker-compose.yaml` file. With this, you can easily set up a working database for this repo:
 
